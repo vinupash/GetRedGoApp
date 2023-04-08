@@ -5,6 +5,9 @@ import ProductImage from './../../assets/images/productImage.png'
 import Golden from './../../assets/images/golden.png'
 import Silver from './../../assets/images/silver.png'
 import Bronze from './../../assets/images/bronze.png'
+import Tag from './../../assets/images/Tag.png'
+import bgImageCongo from './../../assets/images/bgImageCongo.png'
+import bikeImg from './../../assets/images/bikeImg.png'
 
 export default {
     cardBg,
@@ -13,5 +16,8 @@ export default {
     ProductImage,
     Golden,
     Silver,
-    Bronze
+    Bronze,
+    Tag,
+    bgImageCongo,
+    bikeImg
 };

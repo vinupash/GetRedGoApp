@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, StatusBar, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, StatusBar, Dimensions, ActivityIndicator, Animated } from 'react-native';
 import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants';
 import { SvgXml } from 'react-native-svg';
 import Logo from '../../../assets/images/Logo';
-import BackIcon from '../../../assets/images/BackIcon';
 import { PrimaryBtn } from '../../Components/Buttons';
 import { Input } from '../../Components/Inputs';
 import { validatePhoneNum } from '../../Constants/methods';
-import { baseUrl } from '../../Constants/Api';
+import { LoginApi } from '../../Constants/ApiCall';
+import LogoWhite from '../../../assets/images/LogoWhite';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -15,52 +15,67 @@ const Login = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
     const [isMobileNumber, setMobileNumber] = useState('');
     const [isMobileNumberError, setMobileNumberError] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSuccessMessage, setSuccessMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const handleErrorMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 3000);
+    };
+
+    const handleSuccessMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setSuccessMessage('');
+        }, 3000);
+    };
+
     console.log('isMobileNumber--->', isMobileNumber);
 
     const submitData = async () => {
-        try {
-            if (isMobileNumber.trim().length < 10 || !validatePhoneNum(isMobileNumber)) {
-                setMobileNumberError('Please enter vaild mobile number');
-                return;
-            }
-
-            setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-            var formdata = new FormData();
-            formdata.append("mobile", isMobileNumber);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "Auth/checkUserExists", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json Login--->', json);
-            if (json.status === "success") {
-                alert(json.message)
-                // alert(json.result.fldv_otp)
-                navigation.navigate('OTP', {
-                    user: {
-                        mobileNumber: isMobileNumber,
-                        waiter_id: json.result.fldi_waiter_id,
-                        store_id: json.result.fldi_store_id,
-                    }
-                })
-            } else {
-                alert(json.message)
-            }
-
-        } catch (error) {
-            console.log(error.message);
+        if (isMobileNumber.trim().length < 10 || !validatePhoneNum(isMobileNumber)) {
+            handleErrorMsg()
+            setErrorMessage('Please enter vaild mobile number');
+            return;
         }
-    }
+        setLoading(true)
+        const response = await LoginApi(isMobileNumber);
+        setLoading(false)
+        // console.log('response--->', response);
+        if (response.status === "success") {
+            handleSuccessMsg()
+            setSuccessMessage(response.message)
+            // alert(response.message)
+            navigation.navigate('OTP', {
+                user: {
+                    mobileNumber: isMobileNumber,
+                    waiter_id: response.result.fldi_waiter_id,
+                    store_id: response.result.fldi_store_id,
+                }
+            })
+        } else {
+            handleErrorMsg()
+            setErrorMessage(response.message)
+        }
+    };
 
     if (isLoading) {
         return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
@@ -72,42 +87,43 @@ const Login = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.background}
             />
-            <View style={styles.topSection}>
-                {/* <View style={styles.backIconSection}>
-                    <TouchableOpacity
-                        style={styles.backIcon}
-                    onPress={}
-                    >
-                        <SvgXml xml={BackIcon} width={22} height={28} />
-                    </TouchableOpacity>
-                </View> */}
-            </View>
+            {errorMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim
+                }]}>
+                    <Text style={styles.snackbarText}>{errorMessage}</Text>
+                </Animated.View>
+            )}
 
+            {isSuccessMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim, backgroundColor: '#28a745'
+                }]}>
+                    <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
+                </Animated.View>
+            )}
             <View style={styles.inputSection}>
-                <SvgXml xml={Logo} width={123} height={40} style={{ marginVertical: 60, alignItems: 'center' }} />
-                <Text style={styles.pageTitle}>Login</Text>
-                <Input
-                    label='Enter your mobile number'
-                    placeholder='Enter your mobile number'
-                    keyboardType="number-pad"
-                    maxLength={10}
-                    value={isMobileNumber}
-                    setValue={setMobileNumber}
-                />
-                {isMobileNumberError ? <Text style={styles.errorText}>{isMobileNumberError}</Text> : null}
+                <SvgXml xml={LogoWhite} width={123} height={40} style={{ alignItems: 'center' }} />
             </View>
+            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
+                <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
+                    <Text style={styles.pageTitle}>Login</Text>
+                    <Input
+                        label='Enter your mobile number'
+                        placeholder='Enter your mobile number'
+                        keyboardType="number-pad"
+                        maxLength={10}
+                        value={isMobileNumber}
+                        setValue={setMobileNumber}
+                    />
+                </View>
 
-            <View style={styles.bottomSection}>
-                <PrimaryBtn
-                    btnText='Request OTP'
-                    // onPress={() => navigation.navigate('OTP', {
-                    //     user: {
-                    //         mobileNumber: isMobileNumber
-                    //     }
-                    // })}
-
-                    onPress={submitData}
-                />
+                <View style={styles.bottomSection}>
+                    <PrimaryBtn
+                        btnText='Request OTP'
+                        onPress={submitData}
+                    />
+                </View>
             </View>
         </View>
     )
@@ -118,8 +134,8 @@ export default Login
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
         backgroundColor: COLORS.brand.background
     },
     topSection: {
@@ -133,9 +149,11 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     inputSection: {
-        flex: 1,
-        height: windowHeight - 200,
-        alignItems: 'center'
+        alignItems: 'center',
+        height: 200,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLORS.brand.primary
     },
     backIconSection: {
         width: windowWidth - 30,
@@ -153,7 +171,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pageTitle: {
-        marginBottom: 14,
+        marginBottom: 10,
+        marginTop: 24,
         textAlign: 'left',
         width: windowWidth - 30,
         alignSelf: 'center',
@@ -163,12 +182,21 @@ const styles = StyleSheet.create({
         color: COLORS.brand.textColor
         // alignSelf: 'flex-start'
     },
-    errorText: {
-        width: windowWidth - 30,
+    snackbar: {
+        backgroundColor: '#C62828',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1,
+        height: 45,
+        padding: 5,
+        justifyContent: 'center'
+    },
+    snackbarText: {
+        color: '#FFFFFF',
+        fontSize: SIZES.font,
         fontFamily: FONT.InterRegular,
-        fontSize: SIZES.small,
-        textAlign: 'left',
-        lineHeight: 18,
-        color: COLORS.brand.error,
-    }
+        textAlign: 'center'
+    },
 })

@@ -5,12 +5,14 @@ import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants';
 import Card from '../../Components/Card'
 import { SvgXml } from 'react-native-svg';
 import Barcode from '../../../assets/images/Barcode';
-// import QRCode from '../../../assets/images/QRCode';
 import CloseIcon from '../../../assets/images/CloseIcon';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-import { baseUrl } from '../../Constants/Api';
 import QRCode from 'react-native-qrcode-svg';
+import { GenerateQRApi, UserDataApi } from '../../Constants/ApiCall';
+import UploadPictures from '../../../assets/images/UploadPictures';
+import Gift from '../../../assets/images/Gift';
+import Account from '../../../assets/images/Account';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -24,91 +26,55 @@ const Dashboard = ({ navigation }) => {
     const [isUserPoints, setUserPoints] = useState('');
     const [isUnregisterd, setUnregisterd] = useState('');
     const [isRegistered, setRegistered] = useState('');
-
+    const [isUserProfileName, setUserProfileName] = useState('');
     const isFocused = useIsFocused()
 
     useEffect(() => {
-        const GetUserAsyncLoginData = async () => {
-            setLoading(true)
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-            setLoading(false)
-            const transformedLoginData = JSON.parse(userLognDetails);
-            // console.log('transformedLoginData Navigation--->', transformedLoginData);
-            setWaiter_id(transformedLoginData.waiter_id)
-            setStore_id(transformedLoginData.store_id)
+        fetchDataAsync();
+    }, []);
+
+    const fetchDataAsync = async () => {
+        setLoading(true)
+        const userLognDetails = await AsyncStorage.getItem("userData");
+        const transformedLoginData = JSON.parse(userLognDetails);
+        // console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
+        const waiterId = transformedLoginData.waiter_id;
+        const responseUserData = await UserDataApi(waiterId);
+        setLoading(false)
+        setWaiter_id(transformedLoginData.waiter_id)
+        setStore_id(transformedLoginData.store_id)
+        if (responseUserData.status === true) {
+            setUserProfileName(responseUserData.result.fldv_name)
+            setUserPoints(responseUserData.result.fldf_points)
+            setRegistered(responseUserData.registered)
+            setUnregisterd(responseUserData.unregisterd)
+            AsyncStorage.setItem(
+                "userStoreDetails",
+                JSON.stringify({
+                    loginStatus: 1,
+                    fldv_name: responseUserData.result.fldv_name,
+                    fldv_store_name: responseUserData.result.fldv_store_name,
+                })
+            );
+        } else {
+            console.log(responseUserData.message)
         }
-        GetUserAsyncLoginData()
-        UserData()
-    }, [isFocused])
+    };
 
-    // useEffect(() => {
-    //     UserData()
-    // }, [])
-
-    const UserData = async () => {
-        try {
-            setLoading1(true)
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-            setLoading1(false)
-            const transformedLoginData = JSON.parse(userLognDetails);
-            // console.log('transformedLoginData Navigation--->', transformedLoginData);
-            setLoading1(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", transformedLoginData.waiter_id);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "user/getuserInfo", requestOptions);
-            const json = await response.json();
-            setLoading1(false);
-            console.log('json Dashboard UserData--->', json);
-            if (json.status === true) {
-                setUserPoints(json.result.fldf_points)
-                setRegistered(json.registered)
-                setUnregisterd(json.unregisterd)
-                AsyncStorage.setItem(
-                    "userStoreDetails",
-                    JSON.stringify({
-                        loginStatus: 1,
-                        fldv_name: json.result.fldv_name,
-                        fldv_store_name: json.result.fldv_store_name,
-                    })
-                );
-            } else {
-                console.log(json.message)
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
+    console.log('isUserPoints', isUserPoints, isRegistered, isUnregisterd);
 
     const boxNavigationArray = [
         {
-            key: '1',
-            title: 'My Customers',
-            screenName: 'My Customers',
+            key: '2',
+            title: 'My Rewards',
+            screenName: 'My Rewards',
+            icon: Gift,
         },
         {
-            key: '2',
-            title: 'Upload Pictures',
-            screenName: 'Hotel Details',
+            key: '3',
+            title: 'My Customers',
+            screenName: 'My Customers',
+            icon: Account,
         },
     ];
 
@@ -127,6 +93,9 @@ const Dashboard = ({ navigation }) => {
                     }}
                 >
                     <Text style={styles.menuSectionTitle}>{NavigationInfoData.title}</Text>
+                    <View style={{ width: 32, height: 32, backgroundColor: COLORS.brand.primary, borderRadius: 30 / 2, justifyContent: 'center', alignItems: 'center' }}>
+                        <SvgXml xml={NavigationInfoData.icon} width={20} height={20} />
+                    </View>
                 </TouchableOpacity>
             )
         })
@@ -135,81 +104,18 @@ const Dashboard = ({ navigation }) => {
     const generateQR = async () => {
         try {
             setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", isWaiter_id);
-            formdata.append("store_id", isStore_id);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "user/generateNewScan", requestOptions);
-            const json = await response.json();
+            const response = await GenerateQRApi(isWaiter_id, isStore_id);
             setLoading(false);
-            console.log('json Dashboard generateQR--->', json.url);
-            if (json.status === true) {
-                setQR_Code(json.url)
+            // console.log('json Dashboard generateQR--->', response.url);
+            if (response.status === true) {
+                setQR_Code(response.url)
             } else {
-                alert(json.message)
+                alert(response.message)
             }
         } catch (error) {
             console.log(error.message);
         }
     }
-
-    // useEffect(() => {
-    //     const GetGenerateQR = async () => {
-    //         try {
-    //             setLoading(true)
-    //             const userLognDetails = await AsyncStorage.getItem("userData");
-    //             if (!userLognDetails) {
-    //                 // Alert.alert("Unable to fetch mobile number, Login again");
-    //                 return;
-    //             }
-    //             setLoading(false)
-    //             const transformedLoginData = JSON.parse(userLognDetails);
-    //             // console.log('transformedLoginData Navigation--->', transformedLoginData);
-
-    //             setLoading(true);
-    //             var myHeaders = new Headers();
-    //             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-    //             myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-    //             var formdata = new FormData();
-    //             formdata.append("waiter_id", transformedLoginData.waiter_id);
-    //             formdata.append("store_id", transformedLoginData.store_id);
-
-    //             var requestOptions = {
-    //                 method: 'POST',
-    //                 headers: myHeaders,
-    //                 body: formdata,
-    //                 redirect: 'follow'
-    //             };
-
-    //             const response = await fetch(baseUrl + "user/generateNewScan", requestOptions);
-    //             const json = await response.json();
-    //             setLoading(false);
-    //             // console.log('json Dashboard GetGenerateQR--->', json.url);
-    //             if (json.status === true) {
-    //                 return setQR_Code(json.url)
-    //             }
-    //         } catch (error) {
-    //             console.log(error.message);
-    //         }
-    //     }
-    //     GetGenerateQR()
-    // }, [])
-
-    // if (isLoading) {
-    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -220,34 +126,52 @@ const Dashboard = ({ navigation }) => {
             <Header
                 onPress={() => navigation.openDrawer()}
             />
+
+            <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
+                <Text style={{ fontFamily: FONT.InterMedium, color: COLORS.brand.textColor, fontSize: SIZES.medium, marginTop: 10 }}>Hi, {isUserProfileName}</Text>
+                <Text style={{ fontFamily: FONT.InterBold, color: COLORS.brand.black, fontSize: SIZES.mediumLarge, marginTop: 2, fontWeight: '800' }}>Your Point card</Text>
+            </View>
             <>
                 {isLoading1 ? (
                     <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} />
                 ) : (
                     <Card
                         userPoints={isUserPoints}
-                        registerd={!isRegistered ? '0' : isRegistered}
-                        unregisterd={!isUnregisterd ? '0' : isUnregisterd}
+                        registerd={!isUnregisterd ? '0' : isUnregisterd}
                     />
                 )}
             </>
 
             <View style={styles.menuSection}>
+                <Text style={styles.sectionTitle}>Others</Text>
+                <TouchableOpacity
+                    style={styles.menuSectionBox}
+                    onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                        screen: 'Hotel Details',
+                        params: {
+                            user_points: isUserPoints
+                        }
+                    })}
+                >
+                    <Text style={styles.menuSectionTitle}>Upload Pictures</Text>
+                    <View style={{ width: 32, height: 32, backgroundColor: COLORS.brand.primary, borderRadius: 30 / 2, justifyContent: 'center', alignItems: 'center' }}>
+                        <SvgXml xml={UploadPictures} width={20} height={20} />
+                    </View>
+                </TouchableOpacity>
                 {NavigationScreenData()}
             </View>
+
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                    // Alert.alert('Modal has been closed.');
                     setModalVisible(!modalVisible);
                 }}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View style={styles.modalViewContent}>
                             <View style={styles.qrCodeBox}>
-                                {/* <SvgXml xml={QRCode} width={168} height={168} /> */}
                                 {!isQR_Code ? null :
                                     <>
                                         {isLoading ? (
@@ -261,16 +185,6 @@ const Dashboard = ({ navigation }) => {
                                         )}
                                     </>
                                 }
-                                {/* {isLoading ? (
-                                    <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} />
-                                ) : (
-                                    <QRCode
-                                        value="Just some string value"
-                                        logo={{ uri: isQR_Code }}
-                                        logoSize={200}
-                                        logoBackgroundColor='transparent'
-                                    />
-                                )} */}
                             </View>
                             <Text style={styles.qrCodeText}>Scan to Reward</Text>
                             <TouchableOpacity
@@ -282,7 +196,7 @@ const Dashboard = ({ navigation }) => {
                         </View>
                         <TouchableOpacity
                             style={styles.blackBtn}
-                            onPress={() => setModalVisible(!modalVisible)}>
+                            onPress={() => { setModalVisible(!modalVisible), fetchDataAsync() }}>
                             <SvgXml xml={CloseIcon} width={24} height={24} />
                         </TouchableOpacity>
                     </View>
@@ -308,32 +222,27 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.brand.background
     },
     menuSection: {
-        flexDirection: 'row',
-        flexWrap: "wrap",
-        justifyContent: 'space-between',
         width: windowWidth - 30,
         alignSelf: 'center',
         marginTop: 15,
     },
     menuSectionBox: {
-        width: '48%',
-        minHeight: 80,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 16,
-        borderRadius: 4,
+        width: windowWidth - 30,
+        alignSelf: 'center',
+        height: 53,
+        marginVertical: 8,
         ...SHADOWS.light,
-        marginHorizontal: 1,
-        borderWidth: 1,
-        borderColor: '#CCCCCC',
-        backgroundColor: COLORS.brand.background
+        borderRadius: 10,
+        backgroundColor: COLORS.brand.white,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10
     },
     menuSectionTitle: {
         color: COLORS.brand.textColor,
-        fontSize: SIZES.medium,
-        fontFamily: FONT.InterRegular
+        fontFamily: FONT.InterRegular,
+        fontSize: SIZES.font
     },
     scanBtn: {
         position: 'absolute',
@@ -410,5 +319,11 @@ const styles = StyleSheet.create({
         color: COLORS.brand.white,
         fontFamily: FONT.InterRegular,
         fontSize: SIZES.medium,
+    },
+    sectionTitle: {
+        fontFamily: FONT.InterMedium,
+        color: COLORS.brand.textColor,
+        fontSize: SIZES.medium,
+        marginBottom: 10
     }
 })

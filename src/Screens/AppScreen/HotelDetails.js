@@ -33,6 +33,7 @@ import { baseUrl } from '../../Constants/Api';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 import { useIsFocused } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 const HotelDetails = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
@@ -48,13 +49,16 @@ const HotelDetails = ({ navigation, route }) => {
     const [isStoreName, setStoreName] = useState('');
     const [isPoints, setPoints] = useState('');
     const isFocused = useIsFocused()
-    const { userPoints } = route.params;
+    const { user_points } = route.params;
+    const routepage = useRoute();
+
+    console.log('Current route name:', routepage.name);
 
     useEffect(() => {
         UserAsyncStorageData()
         // UserData()
         UploadAllowed()
-        setPoints(userPoints.user_points)
+        setPoints(user_points)
     }, [isFocused])
     // console.log('--->', userPoints.user_points);
 
@@ -502,7 +506,8 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={Table} width={43} height={42} />
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('View All Table', {
+                                onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                                    screen: 'View All Table',
                                 })}
                                 style={[styles.btnView]}
                             >
@@ -569,7 +574,10 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={Bar} width={43} height={38} />
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('View All Bar', {
+                                // onPress={() => navigation.navigate('View All Bar', {
+                                // })}
+                                onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                                    screen: 'View All Bar',
                                 })}
                                 style={[styles.btnView]}
                             >
@@ -636,7 +644,10 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={Outside} width={43} height={43} />
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('View All Outside', {
+                                // onPress={() => navigation.navigate('View All Outside', {
+                                // })}
+                                onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                                    screen: 'View All Outside',
                                 })}
                                 style={[styles.btnView]}
                             >
@@ -672,8 +683,11 @@ const HotelDetails = ({ navigation, route }) => {
                                         :
                                         <TouchableOpacity
                                             // onPress={() => captureImageMenu('photo')}
-                                            onPress={() => navigation.navigate('View All Menu Upload', {
+                                            // onPress={() => navigation.navigate('View All Menu Upload', {
 
+                                            // })}
+                                            onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                                                screen: 'View All Menu Upload',
                                             })}
                                             style={[styles.btnUpload,
                                             {
@@ -706,8 +720,11 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={MenuIcon} width={32} height={42} />
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('View All Menu', {
+                                // onPress={() => navigation.navigate('View All Menu', {
 
+                                // })}
+                                onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                                    screen: 'View All Menu',
                                 })}
                                 style={[styles.btnView]}
                             >

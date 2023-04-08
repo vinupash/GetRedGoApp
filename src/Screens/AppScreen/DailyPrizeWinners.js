@@ -61,33 +61,49 @@ const DailyPrizeWinners = ({ navigation }) => {
                 <View style={styles.cardSection}
                     key={index}>
                     <View style={{
-                        padding: 10,
+                        padding: 20,
                         flex: 1
                     }}>
                         <Text style={styles.cardUserName}>{CustomersDetail.fldv_name}</Text>
 
-                        {/* <ImageBackground
+                        <ImageBackground
                             style={styles.prizeTag}
                             source={(index == 0) ? assets.Golden :
                                 (index == 1) ? assets.Silver :
                                     assets.Bronze}
                             resizeMode="cover">
                             <Text style={styles.prizeText}>{index + 1}</Text>
-                        </ImageBackground> */}
+                        </ImageBackground>
                         <View style={{
                             flexDirection: 'row'
                         }}>
-                            <View style={{ width: '35%' }}>
+                            <View style={{ width: '48%' }}>
                                 <Text style={styles.cardTitle}>Restaurant</Text>
                                 <Text style={styles.cardText}>{CustomersDetail.fldv_store_name ? CustomersDetail.fldv_store_name : '-'}</Text>
                             </View>
-                            <View style={{ width: '35%' }}>
+                            <View style={{ width: '48%' }}>
                                 <Text style={styles.cardTitle}>City</Text>
                                 <Text style={styles.cardText}>{CustomersDetail.fldv_city ? CustomersDetail.fldv_city : '-'}</Text>
                             </View>
-                            <View style={{ width: '30%' }}>
+                            {/* <View style={{ width: '30%' }}>
                                 <Text style={styles.cardTitle}>Date</Text>
                                 <Text style={styles.cardText}>{moment(CustomersDetail.fldd_date).format('Do MMM YYYY')}</Text>
+                            </View> */}
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 45, marginTop: 10 }}>
+                            <View style={{ width: '48%', height: 45 }}>
+                                <ImageBackground
+                                    source={assets.Tag}
+                                    style={{ width: '100%', height: 45, justifyContent: 'center' }}
+                                    resizeMode='contain'>
+                                    <Text style={{ marginLeft: '20%', fontFamily: FONT.InterBold, fontWeight: '800', fontSize: SIZES.medium, color: COLORS.brand.white }}>
+                                        Amazon
+                                    </Text>
+                                </ImageBackground>
+                            </View>
+
+                            <View style={{ width: '48%', height: 45, backgroundColor: '#FFF7EB', borderRadius: 3, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#FF9900', fontSize: SIZES.base, fontFamily: FONT.InterRegular, textAlign: 'center' }}>Amazon Pay Gift Voucher Worth Rs.1000</Text>
                             </View>
                         </View>
                     </View>
@@ -116,6 +132,8 @@ const DailyPrizeWinners = ({ navigation }) => {
             </View>
         );
     };
+
+    const currentDate = new Date();
 
     // if (isLoading) {
     //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
@@ -150,6 +168,7 @@ const DailyPrizeWinners = ({ navigation }) => {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.inputSection}>
+                    <Text style={styles.dateDetailsText}>{moment(currentDate).format('Do MMM YYYY')}</Text>
                     {/* <Text style={styles.dateDetailsText}>24th Feb 23</Text> */}
                     {isPrizeWinners.length > 0 ?
                         <>
@@ -185,8 +204,8 @@ const styles = StyleSheet.create({
     cardSection: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        height: 96,
+        // alignItems: 'center',
+        minHeight: 146,
         marginBottom: 10,
         ...SHADOWS.light,
         borderWidth: 1,

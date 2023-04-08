@@ -376,6 +376,67 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
         }
     };
 
+    const captureImageCombo = async (type) => {
+        setImageType('combo')
+        let options = {
+            mediaType: type,
+            maxWidth: 300,
+            maxHeight: 550,
+            quality: 1,
+            videoQuality: 'low',
+            durationLimit: 30, //Video max duration in seconds
+            saveToPhotos: true,
+        };
+        let isCameraPermitted = await requestCameraPermission();
+        let isStoragePermitted = await requestExternalWritePermission();
+        if (isCameraPermitted && isStoragePermitted) {
+            launchCamera(options, (response) => {
+                console.log('Response--->', response);
+
+                if (response.didCancel) {
+                    alert('User cancelled camera picker');
+                    return;
+                } else if (response.errorCode == 'camera_unavailable') {
+                    alert('Camera not available on device');
+                    return;
+                } else if (response.errorCode == 'permission') {
+                    alert('Permission not satisfied');
+                    return;
+                } else if (response.errorCode == 'others') {
+                    alert(response.errorMessage);
+                    return;
+                } else {
+                    const resitem = response && response.assets[0]
+                    const img = {
+                        uri: resitem.uri,
+                        name: resitem.fileName,
+                        type: resitem.type
+                    }
+                    console.log('img--->', img);
+                    console.log('setImage--->', response.assets[0].uri);
+                    setTableImagePath(response.assets[0].uri)
+                    setTableImageType(img)
+                    { ImageUploadCoke() }
+                }
+
+                // if (!response.uri) {
+                //     const resitem = response && response.assets[0]
+                //     const img = {
+                //         uri: resitem.uri,
+                //         name: resitem.fileName,
+                //         type: resitem.type
+                //     }
+                //     console.log('img--->', img);
+                //     console.log('setImage--->', response.assets[0].uri);
+                //     setTableImagePath(response.assets[0].uri)
+                //     setTableImageType(img)
+                //     { ImageUploadCokeZero() }
+                // }
+
+            });
+        }
+    };
+
     const notAllowed = () => {
         return alert('Not allowed')
     }
@@ -451,6 +512,33 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
                             }}>
                                 <View style={{ width: '100%', padding: 10 }}>
                                     <Text style={[styles.cardText, { fontSize: SIZES.medium }]}>Coke Zero</Text>
+                                </View>
+                            </View>
+
+                        </View>
+
+                        <View style={[styles.cardPointBox]}>
+                            <SvgXml xml={CokeIconRed} width={43} height={46} />
+                        </View>
+                    </ImageBackground>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    // onPress={cokeZeroImage}
+                    onPress={() => captureImageCombo('photo')}
+                >
+                    <ImageBackground style={styles.cardSection} source={assets.cardBgBlack} resizeMode="cover">
+                        <View style={{
+                            padding: 10,
+                            flex: 1
+                        }}>
+                            <View style={{
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}>
+                                <View style={{ width: '100%', padding: 10 }}>
+                                    <Text style={[styles.cardText, { fontSize: SIZES.medium }]}>Combo</Text>
                                 </View>
                             </View>
 

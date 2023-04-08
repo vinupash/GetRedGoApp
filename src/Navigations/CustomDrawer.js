@@ -1,28 +1,24 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
-import {
-    createDrawerNavigator,
-    DrawerContentScrollView,
-    DrawerItemList,
-    DrawerItem,
-
-} from '@react-navigation/drawer';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { SvgXml } from 'react-native-svg';
 import Close from '../../assets/images/Close';
 import Logo from '../../assets/images/Logo';
 import { COLORS, FONT, SIZES } from '../Constants';
 import Logout from '../../assets/images/Logout';
 import { AuthContext } from '../Context/AuthContex';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { baseUrl } from '../Constants/Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const CustomDrawer = (props) => {
     const { userLogout } = useContext(AuthContext);
     const [isLoading, setLoading] = useState(false);
     const [isUserProfileName, setUserProfileName] = useState('');
-    const [activeItem, setActiveItem] = useState('Dashboard');
     const isFocused = useIsFocused()
+    const navigation = useNavigation();
+    const [currentPageName, setCurrentPageName] = useState(null);
+    const [activeItem, setActiveItem] = useState('Dashboard');
 
     const handleItemPress = (title) => {
         setActiveItem(title);
@@ -38,26 +34,26 @@ const CustomDrawer = (props) => {
     };
 
     useEffect(() => {
-        UserAsyncStorageData()
-    }, [isFocused])
+        const unsubscribe = navigation.addListener('state', () => {
+            setCurrentPageName(navigation.getCurrentRoute().name);
+        });
 
-    const UserAsyncStorageData = async () => {
-        try {
+        return unsubscribe;
+    }, [navigation]);
+
+    console.log('currentPageName', currentPageName);
+
+    useEffect(() => {
+        const fetchDataAsync = async () => {
             setLoading(true)
             const userStoreDetails = await AsyncStorage.getItem("userStoreDetails");
-            if (!userStoreDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
             setLoading(false)
             const transformedStoreData = JSON.parse(userStoreDetails);
-            console.log('transformedStoreData --->', transformedStoreData);
+            console.log(transformedStoreData);
             setUserProfileName(transformedStoreData.fldv_name)
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
+        };
+        fetchDataAsync();
+    }, []);
 
     if (isLoading) {
         return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
@@ -90,133 +86,61 @@ const CustomDrawer = (props) => {
                     }}>Hello {isUserProfileName}!</Text>
                 </View>
                 <View style={{ flex: 1, backgroundColor: "#F5F5F5", marginTop: 10, }}>
-
                     <DrawerItem
                         title="Dashboard"
-                        active={activeItem === 'Dashboard'}
+                        active={currentPageName === 'Dashboard' ? activeItem : null}
                         onPress={() => { handleItemPress('Dashboard'); props.navigation.navigate('Dashboard'); }}
                     />
                     <DrawerItem
                         title="My Customers"
-                        active={activeItem === 'My Customers'}
+                        active={currentPageName === 'My Customers' ? activeItem : null}
                         onPress={() => { handleItemPress('My Customers'); props.navigation.navigate('My Customers'); }}
                     />
                     <DrawerItem
                         title="About"
-                        active={activeItem === 'About'}
+                        active={currentPageName === 'About' ? activeItem : null}
                         onPress={() => { handleItemPress('About'); props.navigation.navigate('About'); }}
                     />
-
                     <DrawerItem
                         title="Contact Us"
-                        active={activeItem === 'Contact Us'}
+                        active={currentPageName === 'Contact Us' ? activeItem : null}
                         onPress={() => { handleItemPress('Contact Us'); props.navigation.navigate('Contact Us'); }}
                     />
                     <DrawerItem
                         title="Privacy Policy"
-                        active={activeItem === 'Privacy Policy'}
+                        active={currentPageName === 'Privacy Policy' ? activeItem : null}
                         onPress={() => { handleItemPress('Privacy Policy'); props.navigation.navigate('Privacy Policy'); }}
                     />
                     <DrawerItem
                         title="Daily Prize Winners"
-                        active={activeItem === 'Daily Prize Winners'}
+                        active={currentPageName === 'Daily Prize Winners' ? activeItem : null}
                         onPress={() => { handleItemPress('Daily Prize Winners'); props.navigation.navigate('Daily Prize Winners'); }}
                     />
                     <DrawerItem
                         title="Weekly Prize Winners"
-                        active={activeItem === 'Weekly Prize Winners'}
+                        active={currentPageName === 'Weekly Prize Winners' ? activeItem : null}
                         onPress={() => { handleItemPress('Weekly Prize Winners'); props.navigation.navigate('Weekly Prize Winners'); }}
                     />
                     <DrawerItem
                         title="Monthly Prize Winners"
-                        active={activeItem === 'Monthly Prize Winners'}
+                        active={currentPageName === 'Monthly Prize Winners' ? activeItem : null}
                         onPress={() => { handleItemPress('Monthly Prize Winners'); props.navigation.navigate('Monthly Prize Winners'); }}
                     />
                     <DrawerItem
                         title="Leader Board"
-                        active={activeItem === 'Leader Board'}
+                        active={currentPageName === 'Leader Board' ? activeItem : null}
                         onPress={() => { handleItemPress('Leader Board'); props.navigation.navigate('Leader Board'); }}
                     />
-                    {/* <DrawerItem
-                        label="Dashboard"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('Dashboard');
-                        }}
-                    />
                     <DrawerItem
-                        label="My Customers"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('My Customers');
-                        }}
+                        title="Rewards Catalogue"
+                        active={currentPageName === 'Rewards Catalogue' ? activeItem : null}
+                        onPress={() => { handleItemPress('Rewards Catalogue'); props.navigation.navigate('Rewards Catalogue'); }}
                     />
-                    <DrawerItem
-                        label="About App"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('About');
-                        }}
-                    />
-                    <DrawerItem
-                        label="Contact Us"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('Contact Us');
-                        }}
-                    />
-                    <DrawerItem
-                        label="Privacy Policy"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('Privacy Policy');
-                        }}
-                    />
-                    <DrawerItem
-                        label="Daily Prize Winners"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('Daily Prize Winners');
-                        }}
-                    />
-                    <DrawerItem
-                        label="Weekly Prize Winners"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('Weekly Prize Winners');
-                        }}
-                    />
-                    <DrawerItem
-                        label="Monthly Prize Winners"
-                        labelStyle={styles.menuLabel}
-                        style={styles.drawerItemStyle}
-                        onPress={() => {
-                            props.navigation.navigate('Monthly Prize Winners');
-                        }}
-                    /> */}
                 </View>
             </DrawerContentScrollView>
             <TouchableOpacity
                 onPress={() => { userLogout() }}
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingHorizontal: 20,
-                    borderWidth: 1,
-                    marginHorizontal: 20,
-                    borderRadius: 5,
-                    marginBottom: 20,
-                    height: 45,
-                    borderColor: COLORS.brand.primary
-                }}
+                style={styles.logotBox}
             >
                 <Text style={{ fontFamily: FONT.InterMedium, fontSize: SIZES.font, color: COLORS.brand.primary, marginRight: 8, lineHeight: 18, marginLeft: 6 }}>Logout</Text>
                 <SvgXml xml={Logout} width={20} height={20} />
@@ -231,15 +155,40 @@ const styles = StyleSheet.create({
     menuLabel: {
         fontFamily: FONT.InterMedium,
         fontSize: SIZES.font,
-        lineHeight: 18
     },
-    drawerItemStyle: {
+    active: {
+        borderWidth: 1,
+        backgroundColor: '#FAE6E7',
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        marginHorizontal: 16,
+        borderRadius: 5,
+        marginBottom: 10,
+        height: 45,
+        justifyContent: 'center',
+        borderColor: COLORS.brand.primary
+    },
+    unactive: {
         borderWidth: 1,
         height: 45,
         justifyContent: 'center',
         borderRadius: 5,
         marginBottom: 10,
         borderColor: '#FAE6E7',
+        marginHorizontal: 16,
+        paddingHorizontal: 16,
+    },
+    logotBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        borderWidth: 1,
+        marginHorizontal: 20,
+        borderRadius: 5,
+        marginBottom: 20,
+        height: 45,
+        borderColor: COLORS.brand.primary
     },
     item: {
         borderWidth: 1,

@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SvgXml } from 'react-native-svg';
 import CardIcon from '../../assets/images/CardIcon';
 import { COLORS, FONT, SHADOWS, SIZES } from '../Constants';
+import Coke from '../../assets/images/Coke';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -13,34 +14,27 @@ const Card = ({
     unregisterd
 }) => {
     return (
-        <LinearGradient
-            start={{ x: 0, y: 0.25 }} end={{ x: 0.5, y: 1.8 }}
-            colors={['#660C12', '#B83808', '#F5AD1D']}
-            style={styles.cardBox}
-        >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                <View style={{ flex: 1, marginRight: 10 }}>
-                    <Text style={styles.cardTitle}>Points</Text>
-                    <Text style={styles.CardPoint}>{userPoints}</Text>
-                    <Text style={styles.cardSubText}>48 Points more to go</Text>
-                </View>
-                <SvgXml xml={CardIcon} width={56} height={40} />
+        <View style={styles.cardBox}>
+            <View style={{ width: '35%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
+                <Text style={styles.cardTitle}>Points</Text>
+                <Text
+                    style={styles.CardPoint}
+                >
+                    {userPoints}
+                </Text>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                <View style={{ width: '49%' }}>
-                    <Text style={styles.cardTitle}>Registered</Text>
-                    <Text style={styles.cardCustomersPoint}>{registerd}</Text>
-                </View>
-                <View style={{ width: '49%' }}>
-                    <Text style={styles.cardTitle}>Unregisterd</Text>
-                    <Text style={styles.cardCustomersPoint}>{unregisterd}</Text>
-                </View>
-                {/* <View style={{ width: '33%' }}>
-                    <Text style={styles.cardTitle}>Customers</Text>
-                    <Text style={styles.cardCustomersPoint}>60</Text>
-                </View> */}
+            <View style={{ width: '35%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
+                <Text style={styles.cardTitle}>Customers</Text>
+                <Text
+                    style={styles.CardPoint}
+                >
+                    {registerd}
+                </Text>
             </View>
-        </LinearGradient>
+            <View style={{ width: '30%', height: '100%', alignItems: 'center', position: 'relative' }}>
+                <SvgXml xml={Coke} height={124} width={38} style={{ position: 'absolute', top: -25 }} />
+            </View>
+        </View>
     )
 }
 
@@ -48,16 +42,16 @@ export default Card
 
 const styles = StyleSheet.create({
     cardBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
         width: windowWidth - 30,
         alignSelf: 'center',
-        minHeight: 130,
-        paddingHorizontal: 16,
-        paddingVertical: 20,
-        borderRadius: 8,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginVertical: 10,
-        ...SHADOWS.light
+        minHeight: 112,
+        backgroundColor: COLORS.brand.primary,
+        borderRadius: 10,
+        marginBottom: 5,
+        ...SHADOWS.light,
+        marginTop: 10
     },
     cardTitle: {
         fontSize: SIZES.medium,
@@ -74,7 +68,7 @@ const styles = StyleSheet.create({
     CardPoint: {
         fontSize: SIZES.extraLarge,
         color: COLORS.brand.white,
-        fontWeight: '800',
+        fontWeight: '700',
         fontFamily: FONT.InterBold,
         marginBottom: 5
     },

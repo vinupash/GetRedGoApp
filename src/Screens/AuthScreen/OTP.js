@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { StyleSheet, Text, View, StatusBar, Dimensions, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
+import { StyleSheet, Text, View, StatusBar, Dimensions, TouchableOpacity, TextInput, ActivityIndicator, Animated } from 'react-native';
 import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants';
 import { SvgXml } from 'react-native-svg';
 import Logo from '../../../assets/images/Logo';
@@ -12,6 +12,9 @@ import { useIsFocused } from '@react-navigation/native';
 import { AuthContext } from '../../Context/AuthContex';
 import { baseUrl } from '../../Constants/Api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LogoWhite from '../../../assets/images/LogoWhite';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import { ReSendOtpApi, ValidateOtpApi } from '../../Constants/ApiCall';
 
 const OTP = ({ navigation, route }) => {
     const { GetUserAsyncLoginData } = useContext(AuthContext);
@@ -30,6 +33,38 @@ const OTP = ({ navigation, route }) => {
     const [isMobileOTPError, setMobileOTPError] = useState(null);
     const [isWaiter_id, setWaiter_id] = useState('');
     const [isStore_id, setStore_id] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSuccessMessage, setSuccessMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const handleErrorMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 3000);
+    };
+
+    const handleSuccessMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setSuccessMessage('');
+        }, 3000);
+    };
 
     const [timer, setTimer] = useState(0);
     const timeOutCallback = useCallback(() => setTimer(currTimer => currTimer - 1), []);
@@ -48,30 +83,15 @@ const OTP = ({ navigation, route }) => {
 
     const ReSendOtp = async () => {
         try {
-            setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-            var formdata = new FormData();
-            formdata.append("mobile", isMobileNumber);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "Auth/resendotp", requestOptions);
-            const json = await response.json();
-
-            setLoading(false);
-            console.log('json OTP--->', json);
-            if (json.status === "success") {
-                alert(json.message)
+            const response = await ReSendOtpApi(isMobileNumber);
+            console.log('json OTP--->', response);
+            if (response.status === "success") {
+                handleSuccessMsg();
+                setSuccessMessage(response.message)
             } else {
-                alert(json.message)
+                handleErrorMsg()
+                setErrorMessage(response.message)
+                alert(response.message)
             }
         } catch (error) {
             console.log(error.message);
@@ -90,57 +110,36 @@ const OTP = ({ navigation, route }) => {
     };
 
     const submitData = async () => {
-        try {
-
-            if (!isMobileOTP) {
-                setMobileOTPError('Please enter valid OTP')
-            } else {
-                setMobileOTPError(null)
-            }
-            setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-            var formdata = new FormData();
-            formdata.append("otp", isMobileOTP);
-            formdata.append("waiter_id", isWaiter_id);
-            formdata.append("mobile", isMobileNumber);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "Auth/validateotp", requestOptions);
-            const json = await response.json();
-
-            setLoading(false);
-            console.log('json OTP--->', json);
-            if (json.status === "success") {
-                GetUserAsyncLoginData();
-                alert(json.message)
-                AsyncStorage.setItem(
-                    "userData",
-                    JSON.stringify({
-                        loginStatusUser: 1,
-                        userMobileNumber: isMobileNumber,
-                        waiter_id: isWaiter_id,
-                        loginStatus: json.result,
-                        store_id: isStore_id,
-                    })
-                );
-                GetUserAsyncLoginData();
-            } else {
-                alert(json.message)
-            }
-
-        } catch (error) {
-            console.log(error.message);
+        if (!isMobileOTP) {
+            handleErrorMsg()
+            setErrorMessage('Please enter valid OTP')
+            return
         }
-    }
+        setLoading(true)
+        const response = await ValidateOtpApi(isMobileOTP, isWaiter_id, isMobileNumber);
+        setLoading(false)
+        console.log('response--->', response);
+        if (response.status === "success") {
+            GetUserAsyncLoginData();
+            alert(response.message)
+            handleSuccessMsg()
+            setSuccessMessage(response.message)
+            AsyncStorage.setItem(
+                "userData",
+                JSON.stringify({
+                    loginStatusUser: 1,
+                    userMobileNumber: isMobileNumber,
+                    waiter_id: isWaiter_id,
+                    loginStatus: response.result,
+                    store_id: isStore_id,
+                })
+            );
+            GetUserAsyncLoginData();
+        } else {
+            handleErrorMsg()
+            setErrorMessage(json.message)
+        }
+    };
 
     if (isLoading) {
         return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
@@ -152,8 +151,23 @@ const OTP = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.background}
             />
-            <View style={styles.topSection}>
-                <View style={styles.backIconSection}>
+            {errorMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim
+                }]}>
+                    <Text style={styles.snackbarText}>{errorMessage}</Text>
+                </Animated.View>
+            )}
+
+            {isSuccessMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim, backgroundColor: '#28a745'
+                }]}>
+                    <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
+                </Animated.View>
+            )}
+            {/* <View style={styles.backIconSection}>
+                <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
                     <TouchableOpacity
                         style={styles.backIcon}
                         onPress={navigation.goBack}
@@ -161,67 +175,69 @@ const OTP = ({ navigation, route }) => {
                         <SvgXml xml={BackIcon} width={22} height={28} />
                     </TouchableOpacity>
                 </View>
+            </View> */}
+            <View style={styles.inputSection}>
+                <SvgXml xml={LogoWhite} width={123} height={40} style={{ alignItems: 'center' }} />
             </View>
 
-            <View style={styles.inputSection}>
-                <SvgXml xml={Logo} width={123} height={40} style={{ marginVertical: 60, alignItems: 'center' }} />
-                <Text style={styles.pageTitle}>Enter the OTP</Text>
-                <View style={styles.inputSectionBox}>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.inputLabel}>We have sent it to +91 {userMobilenumbaer}</Text>
-                        <TouchableOpacity onPress={navigation.goBack}><Text style={{ color: COLORS.brand.error }}> Change Number</Text></TouchableOpacity>
-                    </View>
-                    <View style={styles.inputBox}>
-                        <TextInput
-                            style={styles.inputStyle}
-                            placeholder="Enter OTP"
-                            placeholderTextColor='#A3A3A3'
+
+            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
+
+                <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
+                    <Text style={styles.pageTitle}>Enter the OTP</Text>
+                    <View style={styles.inputSectionBox}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={styles.inputLabel}>We have sent it to +91 {userMobilenumbaer}</Text>
+                            <TouchableOpacity onPress={navigation.goBack}><Text style={{ color: COLORS.brand.error }}> Change Number</Text></TouchableOpacity>
+                        </View>
+
+                        <OTPInputView
+                            style={{ width: '100%', height: 70 }}
+                            pinCount={6}
+                            borderStyleBase
+                            autoFocusOnLoad
+                            codeInputFieldStyle={styles.underlineStyleBase}
+                            codeInputHighlightStyle={styles.underlineStyleHighLighted}
+                            onCodeFilled={(code => {
+                                console.log(`Code is ${code}, you are good to go!`)
+                                setMobileOTP(code)
+                            })}
                             secureTextEntry={true}
-                            value={isMobileOTP}
-                            onChangeText={setMobileOTP}
-                            maxLength={6}
-                            keyboardType="number-pad"
                         />
-                        {isMobileOTPError ? <Text style={styles.errorText}>{isMobileOTPError}</Text> : null}
+
+                        {seconds === 0 ?
+                            <>
+                                {timer === 0 ?
+
+                                    <TouchableOpacity
+                                        style={{ marginTop: 10, marginLeft: 5 }}
+                                        onPress={() => { resetTimer(); ReSendOtp() }}
+                                    >
+                                        <Text style={{
+                                            fontFamily: FONT.InterRegular,
+                                            fontSize: SIZES.small,
+                                            color: COLORS.brand.labelText,
+                                            fontWeight: '400'
+                                        }}>Didn’t receive OTP? <Text style={{ color: COLORS.brand.error }}>Resend</Text></Text>
+                                    </TouchableOpacity>
+                                    :
+                                    <Text style={styles.timeLabel}>Time Remaining <Text style={{ color: COLORS.brand.error }}>{timer}s</Text></Text>}
+                            </>
+                            :
+                            <Text style={styles.timeLabel}>Time Remaining <Text style={{ color: COLORS.brand.error }}>{seconds}s</Text></Text>
+                        }
                     </View>
+                </View>
 
-
-                    {seconds === 0 ?
-                        <>
-                            {timer === 0 ?
-
-                                <TouchableOpacity
-                                    style={{ marginTop: 10, marginLeft: 5 }}
-                                    onPress={() => { resetTimer(); ReSendOtp() }}
-                                >
-                                    <Text style={{
-                                        fontFamily: FONT.InterRegular,
-                                        fontSize: SIZES.small,
-                                        color: COLORS.brand.labelText,
-                                        fontWeight: '400'
-                                    }}>Didn’t receive OTP? <Text style={{ color: COLORS.brand.error }}>Resend</Text></Text>
-                                </TouchableOpacity>
-                                :
-                                <Text style={styles.timeLabel}>Time Remaining <Text style={{ color: COLORS.brand.error }}>{timer}s</Text></Text>}
-                        </>
-                        :
-                        <Text style={styles.timeLabel}>Time Remaining <Text style={{ color: COLORS.brand.error }}>{seconds}s</Text></Text>
-                    }
+                <View style={styles.bottomSection}>
+                    <PrimaryBtn
+                        btnText='Verify'
+                        onPress={submitData}
+                    />
                 </View>
             </View>
 
-            <View style={styles.bottomSection}>
-                <PrimaryBtn
-                    btnText='Verify'
-                    // onPress={() => { userLogin() }}
-                    onPress={submitData}
-                // onPress={() => navigation.navigate('Enter Details', {
-                //     user: {
-                //         mobileNumber: isMobileNumber
-                //     }
-                // })}
-                />
-            </View>
+
         </View>
     )
 }
@@ -231,8 +247,8 @@ export default OTP
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
         backgroundColor: COLORS.brand.background
     },
     topSection: {
@@ -246,15 +262,18 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     inputSection: {
-        flex: 1,
-        height: windowHeight - 200,
-        alignItems: 'center'
+        alignItems: 'center',
+        height: 200,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLORS.brand.primary
     },
     backIconSection: {
-        width: windowWidth - 30,
+        width: windowWidth,
         height: 50,
         alignSelf: 'center',
         justifyContent: 'center',
+        backgroundColor: COLORS.brand.primary
     },
     backIcon: {
         width: 40,
@@ -266,7 +285,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pageTitle: {
-        marginBottom: 14,
+        marginBottom: 10,
+        marginTop: 24,
         textAlign: 'left',
         width: windowWidth - 30,
         alignSelf: 'center',
@@ -310,6 +330,34 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         marginTop: 10,
         marginLeft: 5
-    }
+    },
+    snackbar: {
+        backgroundColor: '#C62828',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1,
+        height: 45,
+        padding: 5,
+        justifyContent: 'center'
+    },
+    snackbarText: {
+        color: '#FFFFFF',
+        fontSize: SIZES.font,
+        fontFamily: FONT.InterRegular,
+        textAlign: 'center'
+    },
+    underlineStyleBase: {
+        height: 53,
+        width: 51,
+        borderWidth: 1,
+        borderRadius: 5,
+        fontFamily: FONT.InterRegular,
+        fontSize: SIZES.font,
+        color: COLORS.brand.textColor,
+        backgroundColor: COLORS.brand.white,
+        borderColor: '#E0E0E0',
+    },
 
 })

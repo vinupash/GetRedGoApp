@@ -19,6 +19,9 @@ import ViewAllOutside from '../Screens/AppScreen/ViewAllOutside';
 import ViewAllMenu from '../Screens/AppScreen/ViewAllMenu';
 import LeaderBoard from '../Screens/AppScreen/LeaderBoard';
 import ViewAllMenuUpload from '../Screens/AppScreen/ViewAllMenuUpload';
+import MyRewards from '../Screens/AppScreen/MyRewards';
+import RewardsCatalogue from '../Screens/AppScreen/RewardsCatalogue';
+import HotelDetailsNavigation from './HotelDetailsNavigation';
 const Drawer = createDrawerNavigator();
 
 const AppNavigations = () => {
@@ -36,7 +39,8 @@ const AppNavigations = () => {
             <Drawer.Screen name="About" component={AboutApp} />
             <Drawer.Screen name="Contact Us" component={ContactUs} />
             <Drawer.Screen name="Daily Prize Winners" component={DailyPrizeWinners} />
-            <Drawer.Screen name="Hotel Details" component={HotelDetails} />
+            <Drawer.Screen name="HotelDetailsNavigation" component={HotelDetailsNavigation} />
+            {/* <Drawer.Screen name="Hotel Details" component={HotelDetails} /> */}
             <Drawer.Screen name="My Customers" component={MyCustomers} />
             <Drawer.Screen name="Success" component={Success} />
             <Drawer.Screen name="Upload Pictures" component={UploadPictures} />
@@ -44,12 +48,14 @@ const AppNavigations = () => {
             <Drawer.Screen name="View All" component={ViewAll} />
             <Drawer.Screen name="Weekly Prize Winners" component={WeeklyPrizeWinners} />
             <Drawer.Screen name="Monthly Prize Winners" component={MonthlyPrizeWinners} />
-            <Drawer.Screen name="View All Table" component={ViewAllTable} />
-            <Drawer.Screen name="View All Bar" component={ViewAllBar} />
-            <Drawer.Screen name="View All Outside" component={ViewAllOutside} />
-            <Drawer.Screen name="View All Menu" component={ViewAllMenu} />
+            {/* <Drawer.Screen name="View All Table" component={ViewAllTable} /> */}
+            {/* <Drawer.Screen name="View All Bar" component={ViewAllBar} /> */}
+            {/* <Drawer.Screen name="View All Outside" component={ViewAllOutside} /> */}
+            {/* <Drawer.Screen name="View All Menu" component={ViewAllMenu} /> */}
             <Drawer.Screen name="Leader Board" component={LeaderBoard} />
             <Drawer.Screen name="View All Menu Upload" component={ViewAllMenuUpload} />
+            <Drawer.Screen name="My Rewards" component={MyRewards} />
+            <Drawer.Screen name="Rewards Catalogue" component={RewardsCatalogue} />
         </Drawer.Navigator>
     )
 }

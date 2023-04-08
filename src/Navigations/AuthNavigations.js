@@ -24,7 +24,7 @@ const AuthNavigations = () => {
                     component={SplashScreen}
                     options={{
                         headerShown: false,
-                        animation: 'fade'
+                        animation: 'slide_from_right'
                     }} />)
                 : null
             }
@@ -33,7 +33,7 @@ const AuthNavigations = () => {
                 component={Login}
                 options={{
                     headerShown: false,
-                    animation: 'fade'
+                    animation: 'slide_from_right'
                 }}
             />
             <Stack.Screen
@@ -41,7 +41,7 @@ const AuthNavigations = () => {
                 component={OTP}
                 options={{
                     headerShown: false,
-                    animation: 'fade'
+                    animation: 'slide_from_right'
                 }}
             />
             <Stack.Screen
@@ -49,7 +49,7 @@ const AuthNavigations = () => {
                 component={EnterDetails}
                 options={{
                     headerShown: false,
-                    animation: 'fade'
+                    animation: 'slide_from_right'
                 }}
             />
         </Stack.Navigator>
