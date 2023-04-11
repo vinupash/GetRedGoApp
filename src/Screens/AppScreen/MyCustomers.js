@@ -81,7 +81,7 @@ const MyCustomers = ({ navigation }) => {
                         }}>
                             <View style={{ width: '50%' }}>
                                 <Text style={styles.cardTitle}>Customer No</Text>
-                                <Text style={styles.cardText}>{CustomersInfoData.fldv_mobile ? CustomersInfoData.fldv_mobile : '-'}</Text>
+                                <Text style={styles.cardText}>{CustomersInfoData.fldv_mobile ? CustomersInfoData.fldv_mobile.replace(/^(\d{2})(\d+)$/, (_, firstTwoDigits, remainingDigits) => firstTwoDigits + "*".repeat(remainingDigits.length)) : '-'}</Text>
                             </View>
                             <View style={{ width: '50%' }}>
                                 <Text style={styles.cardTitle}>Status</Text>

@@ -161,7 +161,7 @@ const RewardsCatalogue = ({ navigation }) => {
                 justifyContent: 'space-between',
                 flexDirection: 'row',
             }}>
-                <Text style={styles.pageTitle}>My Rewards</Text>
+                <Text style={styles.pageTitle}>Rewards Catalogue</Text>
                 {isLoading ? (
                     <ActivityIndicator
                         size="small" color={COLORS.brand.primary}
