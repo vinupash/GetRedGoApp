@@ -8,6 +8,9 @@ import Bronze from './../../assets/images/bronze.png'
 import Tag from './../../assets/images/Tag.png'
 import bgImageCongo from './../../assets/images/bgImageCongo.png'
 import bikeImg from './../../assets/images/bikeImg.png'
+import AmazonTag from './../../assets/images/Amazon-Tag.png'
+import ZomatoTag from './../../assets/images/Zomato-Tag.png'
+import GoldTag from './../../assets/images/Gold-Tag.png'
 
 export default {
     cardBg,
@@ -19,5 +22,8 @@ export default {
     Bronze,
     Tag,
     bgImageCongo,
-    bikeImg
+    bikeImg,
+    AmazonTag,
+    ZomatoTag,
+    GoldTag
 };

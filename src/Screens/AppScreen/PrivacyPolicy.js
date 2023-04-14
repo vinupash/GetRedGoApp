@@ -4,7 +4,7 @@ import Header from '../../Components/Header'
 import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants'
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+import { WebView } from 'react-native-webview';
 const PrivacyPolicy = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
@@ -15,8 +15,9 @@ const PrivacyPolicy = ({ navigation }) => {
             <Header
                 onPress={() => navigation.openDrawer()}
             />
-            <Text style={styles.pageTitle}>Privacy Policy</Text>
-            <ScrollView
+            {/* <Text style={styles.pageTitle}>Privacy Policy</Text> */}
+            <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/tnc' }} style={{ flex: 1 }} />
+            {/* <ScrollView
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.inputSection}>
@@ -60,7 +61,7 @@ const PrivacyPolicy = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
-            </ScrollView>
+            </ScrollView> */}
         </SafeAreaView>
     )
 }

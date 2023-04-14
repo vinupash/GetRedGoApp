@@ -31,6 +31,7 @@ const UploadPictures = ({ navigation, route }) => {
             <View style={styles.btnTextGroup}>
                 <Text style={styles.pageTitle}>{isPageTitle}</Text>
                 <TouchableOpacity
+                    activeOpacity={0.85}
                     //    onPress={onPress} 
                     style={[styles.btnView]}
                 >

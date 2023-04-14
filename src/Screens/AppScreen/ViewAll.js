@@ -319,6 +319,7 @@ const ViewAll = ({ navigation, route }) => {
 
                 {isScreenName === 'Table' ?
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={tableImage}
                         style={[styles.btnView]}
                     >
@@ -330,6 +331,7 @@ const ViewAll = ({ navigation, route }) => {
 
                 {isScreenName === 'Bar' ?
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={barImage}
                         style={[styles.btnView]}
                     >
@@ -341,6 +343,7 @@ const ViewAll = ({ navigation, route }) => {
 
                 {isScreenName === 'Outside' ?
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={outsideImage}
                         style={[styles.btnView]}
                     >
@@ -352,6 +355,7 @@ const ViewAll = ({ navigation, route }) => {
 
                 {isScreenName === 'Menu' ?
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={menuImage}
                         style={[styles.btnView]}
                     >

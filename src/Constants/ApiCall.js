@@ -121,6 +121,56 @@ export const GenerateQRApi = async (isWaiter_id, isStore_id) => {
 };
 
 
+export const SavefeedbackApi = async (isWaiter_id, isStore_id, isUserName, isMobileNumber, isUserEmail, isMessage) => {
+    try {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+        var formdata = new FormData();
+        formdata.append("waiter_id", isWaiter_id);
+        formdata.append("store_id", isStore_id);
+        formdata.append("fldv_name", isUserName);
+        formdata.append("fldv_mobile", isMobileNumber);
+        formdata.append("fldv_email", isUserEmail);
+        formdata.append("fldt_msg", isMessage);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(BASE_URL + "feedback/savefeedback", requestOptions);
+        const json = await response.json();
+        return json;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const MyRewardsApi = async (waiterId) => {
+    try {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+        var formdata = new FormData();
+        formdata.append("waiter_id", waiterId);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(BASE_URL + "winner/myRewards", requestOptions);
+        const json = await response.json();
+        return json;
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 
 

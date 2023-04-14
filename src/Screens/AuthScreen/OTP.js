@@ -121,7 +121,7 @@ const OTP = ({ navigation, route }) => {
         console.log('response--->', response);
         if (response.status === "success") {
             GetUserAsyncLoginData();
-            alert(response.message)
+            // alert(response.message)
             handleSuccessMsg()
             setSuccessMessage(response.message)
             AsyncStorage.setItem(
@@ -141,9 +141,9 @@ const OTP = ({ navigation, route }) => {
         }
     };
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
 
     return (
         <View style={styles.container}>
@@ -151,6 +151,7 @@ const OTP = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.background}
             />
+            {/* {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} /> : null} */}
             {errorMessage !== '' && (
                 <Animated.View style={[styles.snackbar, {
                     opacity: fadeAnim
@@ -184,11 +185,15 @@ const OTP = ({ navigation, route }) => {
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
 
                 <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
-                    <Text style={styles.pageTitle}>Enter the OTP</Text>
+                    {/* <Text style={styles.pageTitle}>Enter the OTP</Text> */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', marginBottom: 10, marginTop: 24 }}>
+                        <Text style={styles.pageTitle}>Enter the OTP</Text>
+                        {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center', marginLeft: 10 }} /> : null}
+                    </View>
                     <View style={styles.inputSectionBox}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.inputLabel}>We have sent it to +91 {userMobilenumbaer}</Text>
-                            <TouchableOpacity onPress={navigation.goBack}><Text style={{ color: COLORS.brand.error }}> Change Number</Text></TouchableOpacity>
+                            <TouchableOpacity activeOpacity={0.85} onPress={navigation.goBack}><Text style={{ color: COLORS.brand.error }}> Change Number</Text></TouchableOpacity>
                         </View>
 
                         <OTPInputView
@@ -210,6 +215,7 @@ const OTP = ({ navigation, route }) => {
                                 {timer === 0 ?
 
                                     <TouchableOpacity
+                                        activeOpacity={0.85}
                                         style={{ marginTop: 10, marginLeft: 5 }}
                                         onPress={() => { resetTimer(); ReSendOtp() }}
                                     >
@@ -285,10 +291,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pageTitle: {
-        marginBottom: 10,
-        marginTop: 24,
+        // marginBottom: 10,
+        // marginTop: 24,
         textAlign: 'left',
-        width: windowWidth - 30,
+        // width: windowWidth - 30,
         alignSelf: 'center',
         fontSize: SIZES.extraLarge,
         fontFamily: FONT.InterBold,

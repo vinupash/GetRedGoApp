@@ -366,6 +366,7 @@ const ViewAllBar = ({ navigation, route }) => {
                     </>
                     :
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={() => captureImageBar('photo')}
                         style={[styles.btnView]}
                     >

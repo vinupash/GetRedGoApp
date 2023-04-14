@@ -59,7 +59,7 @@ const Login = ({ navigation }) => {
         setLoading(true)
         const response = await LoginApi(isMobileNumber);
         setLoading(false)
-        // console.log('response--->', response);
+        console.log('response--->', response);
         if (response.status === "success") {
             handleSuccessMsg()
             setSuccessMessage(response.message)
@@ -77,9 +77,9 @@ const Login = ({ navigation }) => {
         }
     };
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
 
     return (
         <View style={styles.container}>
@@ -87,6 +87,7 @@ const Login = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.background}
             />
+            {/* {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} /> : null} */}
             {errorMessage !== '' && (
                 <Animated.View style={[styles.snackbar, {
                     opacity: fadeAnim
@@ -107,7 +108,10 @@ const Login = ({ navigation }) => {
             </View>
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
                 <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
-                    <Text style={styles.pageTitle}>Login</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', marginBottom: 10, marginTop: 24 }}>
+                        <Text style={styles.pageTitle}>Login</Text>
+                        {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center', marginLeft: 10 }} /> : null}
+                    </View>
                     <Input
                         label='Enter your mobile number'
                         placeholder='Enter your mobile number'
@@ -171,16 +175,16 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pageTitle: {
-        marginBottom: 10,
-        marginTop: 24,
+        // marginBottom: 10,
+        // marginTop: 24,
         textAlign: 'left',
-        width: windowWidth - 30,
+        // width: windowWidth - 30,
         alignSelf: 'center',
         fontSize: SIZES.extraLarge,
         fontFamily: FONT.InterBold,
         fontWeight: '700',
-        color: COLORS.brand.textColor
-        // alignSelf: 'flex-start'
+        color: COLORS.brand.textColor,
+        alignSelf: 'flex-start',
     },
     snackbar: {
         backgroundColor: '#C62828',

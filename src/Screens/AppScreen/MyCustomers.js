@@ -5,6 +5,7 @@ import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseUrl } from '../../Constants/Api';
+import moment from 'moment';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -74,11 +75,13 @@ const MyCustomers = ({ navigation }) => {
                         padding: 10,
                         flex: 1
                     }}>
-                        <Text style={styles.cardUserName}>{CustomersInfoData.fldv_name ? CustomersInfoData.fldv_name : '-'}</Text>
+                        {/* <Text style={styles.cardUserName}>{CustomersInfoData.fldv_name ? CustomersInfoData.fldv_name : '-'}</Text> */}
 
                         <View style={{
-                            flexDirection: 'row'
+                            flexDirection: 'row',
+                            marginBottom: 10
                         }}>
+
                             <View style={{ width: '50%' }}>
                                 <Text style={styles.cardTitle}>Customer No</Text>
                                 <Text style={styles.cardText}>{CustomersInfoData.fldv_mobile ? CustomersInfoData.fldv_mobile.replace(/^(\d{2})(\d+)$/, (_, firstTwoDigits, remainingDigits) => firstTwoDigits + "*".repeat(remainingDigits.length)) : '-'}</Text>
@@ -86,6 +89,22 @@ const MyCustomers = ({ navigation }) => {
                             <View style={{ width: '50%' }}>
                                 <Text style={styles.cardTitle}>Status</Text>
                                 <Text style={styles.cardText}>{CustomersInfoData.flg_status == 1 ? 'Registered' : 'Not-Registered'}</Text>
+                            </View>
+
+                        </View>
+
+                        <View style={{
+                            flexDirection: 'row'
+                        }}>
+                            <View style={{ width: '50%' }}>
+                                <Text style={styles.cardTitle}>Date</Text>
+                                {/* <Text style={styles.cardText}>{CustomersInfoData.flddt_date_added ? CustomersInfoData.flddt_date_added : '-'}</Text> */}
+                                <Text style={styles.cardText}>{CustomersInfoData.flddt_date_added ? moment(CustomersInfoData.flddt_date_added).format('Do MMMM YYYY') : '-'}</Text>
+                                {/* {moment(CustomersInfoData.flddt_date_added).format('Do MMMM YYYY')} */}
+                            </View>
+                            <View style={{ width: '50%' }}>
+                                {/* <Text style={styles.cardTitle}>Name</Text>
+                                <Text style={styles.cardText}>{CustomersInfoData.fldv_name ? CustomersInfoData.fldv_name : '-'}</Text> */}
                             </View>
                         </View>
 
@@ -133,18 +152,17 @@ const MyCustomers = ({ navigation }) => {
                     width: windowWidth - 30,
                     alignSelf: 'center',
                     marginBottom: 14,
-                    marginTop: 20,
+                    marginTop: 10,
                     justifyContent: 'space-between',
                     flexDirection: 'row',
                 }}>
-                    <Text style={styles.pageTitle}>My Customers</Text>
+                    {/* <Text style={styles.pageTitle}>My Customers</Text> */}
                     {loading ? (
                         <ActivityIndicator
                             size="small" color={COLORS.brand.primary}
-                            style={{ marginLeft: 8 }} />
+                            style={{ marginLeft: 8, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', flex: 1 }} />
                     ) : null}
                 </View>
-
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
@@ -186,7 +204,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: 96,
+        height: 100,
         marginBottom: 10,
         ...SHADOWS.light,
         borderWidth: 1,

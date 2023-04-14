@@ -15,7 +15,7 @@ const Card = ({
 }) => {
     return (
         <View style={styles.cardBox}>
-            <View style={{ width: '35%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
+            <View style={{ width: '40%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
                 <Text style={styles.cardTitle}>Points</Text>
                 <Text
                     style={styles.CardPoint}
@@ -23,7 +23,7 @@ const Card = ({
                     {userPoints}
                 </Text>
             </View>
-            <View style={{ width: '35%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
+            <View style={{ width: '40%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
                 <Text style={styles.cardTitle}>Customers</Text>
                 <Text
                     style={styles.CardPoint}
@@ -31,7 +31,7 @@ const Card = ({
                     {registerd}
                 </Text>
             </View>
-            <View style={{ width: '30%', height: '100%', alignItems: 'center', position: 'relative' }}>
+            <View style={{ width: '20%', height: '100%', alignItems: 'center', position: 'relative' }}>
                 <SvgXml xml={Coke} height={124} width={38} style={{ position: 'absolute', top: -25 }} />
             </View>
         </View>

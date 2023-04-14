@@ -203,6 +203,7 @@ const ViewAll = ({ navigation, route }) => {
                 <Text style={styles.pageTitle}>{isPageTitle}</Text>
                 {isScreenName === 'Table' ?
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={tableImage}
                         style={[styles.btnView]}
                     >

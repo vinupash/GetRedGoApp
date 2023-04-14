@@ -82,6 +82,7 @@ const Dashboard = ({ navigation }) => {
         return boxNavigationArray.map((NavigationInfoData, i) => {
             return (
                 <TouchableOpacity
+                    activeOpacity={0.85}
                     key={NavigationInfoData.key}
                     style={styles.menuSectionBox}
                     onPress={() => {
@@ -137,7 +138,7 @@ const Dashboard = ({ navigation }) => {
                 ) : (
                     <Card
                         userPoints={isUserPoints}
-                        registerd={!isUnregisterd ? '0' : isUnregisterd}
+                        registerd={!isRegistered ? '0' : isRegistered}
                     />
                 )}
             </>
@@ -145,7 +146,8 @@ const Dashboard = ({ navigation }) => {
             <View style={styles.menuSection}>
                 <Text style={styles.sectionTitle}>Others</Text>
                 <TouchableOpacity
-                    style={styles.menuSectionBox}
+                    activeOpacity={0.85}
+                    style={[styles.menuSectionBox]}
                     onPress={() => navigation.navigate('HotelDetailsNavigation', {
                         screen: 'Hotel Details',
                         params: {
@@ -188,6 +190,7 @@ const Dashboard = ({ navigation }) => {
                             </View>
                             <Text style={styles.qrCodeText}>Scan to Reward</Text>
                             <TouchableOpacity
+                                activeOpacity={0.85}
                                 style={styles.btn}
                                 onPress={generateQR}
                             >
@@ -195,6 +198,7 @@ const Dashboard = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity
+                            activeOpacity={0.85}
                             style={styles.blackBtn}
                             onPress={() => { setModalVisible(!modalVisible), fetchDataAsync() }}>
                             <SvgXml xml={CloseIcon} width={24} height={24} />
@@ -203,6 +207,7 @@ const Dashboard = ({ navigation }) => {
                 </View>
             </Modal>
             <TouchableOpacity
+                activeOpacity={0.85}
                 style={styles.scanBtn}
                 onPress={() => { setModalVisible(true); generateQR() }}
             >

@@ -367,6 +367,7 @@ const ViewAllOutside = ({ navigation, route }) => {
                     </>
                     :
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={() => captureImageOutsite('photo')}
                         style={[styles.btnView]}
                     >

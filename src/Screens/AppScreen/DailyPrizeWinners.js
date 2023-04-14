@@ -26,7 +26,6 @@ const DailyPrizeWinners = ({ navigation }) => {
             setLoading(true)
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=3da17356e226b10588350c425a3ca66f5bf56c67");
 
             var formdata = new FormData();
             formdata.append("type", "daily");
@@ -66,31 +65,66 @@ const DailyPrizeWinners = ({ navigation }) => {
                     }}>
                         <Text style={styles.cardUserName}>{CustomersDetail.fldv_name}</Text>
 
-                        <ImageBackground
+                        {/* <ImageBackground
                             style={styles.prizeTag}
                             source={(index == 0) ? assets.Golden :
                                 (index == 1) ? assets.Silver :
                                     assets.Bronze}
                             resizeMode="cover">
                             <Text style={styles.prizeText}>{index + 1}</Text>
-                        </ImageBackground>
+                        </ImageBackground> */}
                         <View style={{
                             flexDirection: 'row'
                         }}>
-                            <View style={{ width: '48%' }}>
+                            <View style={{ width: '35%' }}>
                                 <Text style={styles.cardTitle}>Restaurant</Text>
                                 <Text style={styles.cardText}>{CustomersDetail.fldv_store_name ? CustomersDetail.fldv_store_name : '-'}</Text>
                             </View>
-                            <View style={{ width: '48%' }}>
+                            <View style={{ width: '35%' }}>
                                 <Text style={styles.cardTitle}>City</Text>
                                 <Text style={styles.cardText}>{CustomersDetail.fldv_city ? CustomersDetail.fldv_city : '-'}</Text>
                             </View>
-                            {/* <View style={{ width: '30%' }}>
+                            <View style={{ width: '30%' }}>
                                 <Text style={styles.cardTitle}>Date</Text>
                                 <Text style={styles.cardText}>{moment(CustomersDetail.fldd_date).format('Do MMM YYYY')}</Text>
-                            </View> */}
+                            </View>
                         </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 45, marginTop: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 45, marginTop: 14 }}>
+                            <View style={{ width: '48%', height: 45 }}>
+                                <ImageBackground
+                                    // source={assets.Tag}
+                                    source={(CustomersDetail.fldi_offer == 1) ? assets.ZomatoTag : (CustomersDetail.fldi_offer == 2) ? assets.AmazonTag :
+                                        assets.GoldTag}
+                                    style={{ width: '100%', height: 45, justifyContent: 'center' }}
+                                    resizeMode='contain'>
+                                    <Text style={{ marginLeft: '20%', fontFamily: FONT.InterBold, fontWeight: '800', fontSize: SIZES.medium, color: COLORS.brand.white }}>
+                                        {(CustomersDetail.fldi_offer == 1) ? 'Zomato' : (CustomersDetail.fldi_offer == 2) ? 'Amazon' :
+                                            'Gold'}
+                                    </Text>
+                                </ImageBackground>
+                            </View>
+                            {CustomersDetail.fldv_code == null ?
+                                null
+                                :
+                                <View style={[styles.rewardsTextBox, {
+                                    backgroundColor: CustomersDetail.fldi_offer == 1 ? '#FFEDEE' : CustomersDetail.fldi_offer == 2 ? '#FFF3E1' : '#F7CC84'
+                                }]}>
+                                    <Text style={[styles.rewardsTex, {
+                                        color: CustomersDetail.fldi_offer == 1 ? '#CB202D' : CustomersDetail.fldi_offer == 2 ? '#FF9900' : '#956109'
+                                    }]}>{CustomersDetail.fldv_code}</Text>
+                                </View>
+                            }
+
+                            {/* <View style={[styles.rewardsTextBox, {
+                                backgroundColor: MyRewardsDetail.fldi_offer == 1 ? '#FFEDEE' : MyRewardsDetail.fldi_offer == 2 ? '#FFF3E1' : '#F7CC84'
+                            }]}>
+                                <Text style={[styles.rewardsTex, {
+                                    color: MyRewardsDetail.fldi_offer == 1 ? '#CB202D' : MyRewardsDetail.fldi_offer == 2 ? '#FF9900' : '#956109'
+                                }]}>{MyRewardsDetail.fldv_code}</Text>
+                            </View> */}
+
+                        </View>
+                        {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 45, marginTop: 10 }}>
                             <View style={{ width: '48%', height: 45 }}>
                                 <ImageBackground
                                     source={assets.Tag}
@@ -105,7 +139,7 @@ const DailyPrizeWinners = ({ navigation }) => {
                             <View style={{ width: '48%', height: 45, backgroundColor: '#FFF7EB', borderRadius: 3, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: '#FF9900', fontSize: SIZES.base, fontFamily: FONT.InterRegular, textAlign: 'center' }}>Amazon Pay Gift Voucher Worth Rs.1000</Text>
                             </View>
-                        </View>
+                        </View> */}
                     </View>
                 </View>
             )
@@ -168,12 +202,11 @@ const DailyPrizeWinners = ({ navigation }) => {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.inputSection}>
-                    <Text style={styles.dateDetailsText}>{moment(currentDate).format('Do MMM YYYY')}</Text>
-                    {/* <Text style={styles.dateDetailsText}>24th Feb 23</Text> */}
+                    {/* <Text style={styles.dateDetailsText}>{moment(currentDate).format('Do MMM YYYY')}</Text> */}
                     {isPrizeWinners.length > 0 ?
                         <>
                             {PrizeWinnersList()}
-                            {renderFooter()}
+                            {/* {renderFooter()} */}
                         </> : <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text>}
                     {/* {PrizeWinnersList()} */}
                 </View>
@@ -205,7 +238,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         // alignItems: 'center',
-        minHeight: 146,
+        // minHeight: 146,
+        minHeight: 96,
         marginBottom: 10,
         ...SHADOWS.light,
         borderWidth: 1,
@@ -259,4 +293,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: COLORS.brand.textColor
     },
+    rewardsTextBox: {
+        width: '48%',
+        height: 45,
+        borderRadius: 3,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    rewardsTex: {
+        // color: '#FF9900',
+        fontSize: SIZES.base,
+        fontFamily: FONT.InterRegular,
+        textAlign: 'center'
+    }
 })

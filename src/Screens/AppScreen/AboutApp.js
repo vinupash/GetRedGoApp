@@ -4,6 +4,8 @@ import Header from '../../Components/Header'
 import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants'
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+import { WebView } from 'react-native-webview';
+import { baseUrl } from '../../Constants/Api';
 
 const AboutApp = ({ navigation }) => {
     return (
@@ -15,8 +17,10 @@ const AboutApp = ({ navigation }) => {
             <Header
                 onPress={() => navigation.openDrawer()}
             />
-            <Text style={styles.pageTitle}>About App</Text>
-            <ScrollView
+            <WebView source={{ uri: 'https://www.wallpaperflare.com/search?wallpaper=anime&page=4' }} style={{ flex: 1 }} />
+            {/* <Text style={styles.pageTitle}>About App</Text> */}
+
+            {/* <ScrollView
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.inputSection}>
@@ -59,7 +63,7 @@ const AboutApp = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
-            </ScrollView>
+            </ScrollView> */}
         </SafeAreaView>
     )
 }

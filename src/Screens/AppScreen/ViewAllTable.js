@@ -362,6 +362,7 @@ const ViewAllTable = ({ navigation, route }) => {
                     </>
                     :
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         onPress={() => captureImageTable('photo')}
                         style={[styles.btnView]}
                     >

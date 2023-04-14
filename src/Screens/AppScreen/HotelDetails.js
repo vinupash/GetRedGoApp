@@ -472,6 +472,7 @@ const HotelDetails = ({ navigation, route }) => {
 
                                     {isUploadAllowedTable == 0 ?
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             // onPress={notAllowed}
                                             style={[styles.btnUpload,
                                             {
@@ -483,6 +484,7 @@ const HotelDetails = ({ navigation, route }) => {
                                         </TouchableOpacity>
                                         :
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             onPress={() => captureImageTable('photo')}
                                             style={[styles.btnUpload,
                                             {
@@ -506,6 +508,7 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={Table} width={43} height={42} />
                             <TouchableOpacity
+                                activeOpacity={0.85}
                                 onPress={() => navigation.navigate('HotelDetailsNavigation', {
                                     screen: 'View All Table',
                                 })}
@@ -531,6 +534,7 @@ const HotelDetails = ({ navigation, route }) => {
                                 <View style={{ width: '50%' }}>
                                     {isUploadAllowedBar == 0 ?
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             // onPress={notAllowed}
                                             style={[styles.btnUpload,
                                             {
@@ -542,6 +546,7 @@ const HotelDetails = ({ navigation, route }) => {
                                         </TouchableOpacity>
                                         :
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             onPress={() => captureImageBar('photo')}
                                             style={[styles.btnUpload,
                                             {
@@ -574,6 +579,7 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={Bar} width={43} height={38} />
                             <TouchableOpacity
+                                activeOpacity={0.85}
                                 // onPress={() => navigation.navigate('View All Bar', {
                                 // })}
                                 onPress={() => navigation.navigate('HotelDetailsNavigation', {
@@ -601,6 +607,7 @@ const HotelDetails = ({ navigation, route }) => {
                                 <View style={{ width: '50%' }}>
                                     {isUploadAllowedOutsite == 0 ?
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             // onPress={notAllowed}
                                             style={[styles.btnUpload,
                                             {
@@ -612,6 +619,7 @@ const HotelDetails = ({ navigation, route }) => {
                                         </TouchableOpacity>
                                         :
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             onPress={() => captureImageOutsite('photo')}
                                             style={[styles.btnUpload,
                                             {
@@ -644,6 +652,7 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={Outside} width={43} height={43} />
                             <TouchableOpacity
+                                activeOpacity={0.85}
                                 // onPress={() => navigation.navigate('View All Outside', {
                                 // })}
                                 onPress={() => navigation.navigate('HotelDetailsNavigation', {
@@ -671,6 +680,7 @@ const HotelDetails = ({ navigation, route }) => {
                                 <View style={{ width: '50%' }}>
                                     {isUploadAllowedOutsite == 0 ?
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             // onPress={notAllowed}
                                             style={[styles.btnUpload,
                                             {
@@ -682,6 +692,7 @@ const HotelDetails = ({ navigation, route }) => {
                                         </TouchableOpacity>
                                         :
                                         <TouchableOpacity
+                                            activeOpacity={0.85}
                                             // onPress={() => captureImageMenu('photo')}
                                             // onPress={() => navigation.navigate('View All Menu Upload', {
 
@@ -720,6 +731,7 @@ const HotelDetails = ({ navigation, route }) => {
                         <View style={[styles.cardPointBox]}>
                             <SvgXml xml={MenuIcon} width={32} height={42} />
                             <TouchableOpacity
+                                activeOpacity={0.85}
                                 // onPress={() => navigation.navigate('View All Menu', {
 
                                 // })}

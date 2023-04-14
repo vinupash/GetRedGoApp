@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, ActivityIndicator } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, ActivityIndicator, Animated } from 'react-native'
 import { PrimaryBtn } from '../../Components/Buttons';
 import Header from '../../Components/Header'
 import { CustomTextArea, Input } from '../../Components/Inputs';
@@ -8,105 +8,102 @@ import { baseUrl } from '../../Constants/Api';
 import { validateEmail, validatePhoneNum } from '../../Constants/methods';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { SavefeedbackApi } from '../../Constants/ApiCall';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const ContactUs = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
     const [isMobileNumber, setMobileNumber] = useState('');
-    const [isMobileNumberError, setMobileNumberError] = useState(null);
     const [isUserName, setUserName] = useState('');
-    const [isUserNameError, setUserNameError] = useState(null);
     const [isUserEmail, setUserEmail] = useState('');
-    const [isUserEmailError, setUserEmailError] = useState(null);
     const [isMessage, setMessage] = useState('')
-    const [isMessageError, setMessageError] = useState(null)
     const [isWaiter_id, setWaiter_id] = useState('');
     const [isStore_id, setStore_id] = useState('');
-
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSuccessMessage, setSuccessMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
     const isFocused = useIsFocused()
 
     useEffect(() => {
-        const GetUserAsyncLoginData = async () => {
+        const fetchDataAsync = async () => {
             setLoading(true)
             const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
             setLoading(false)
-            const transformedLoginData = JSON.parse(userLognDetails);
-            console.log('transformedLoginData Navigation--->', transformedLoginData);
-            setWaiter_id(transformedLoginData.waiter_id)
-            setStore_id(transformedLoginData.store_id)
-        }
-        GetUserAsyncLoginData()
-    }, [isFocused])
+            const transformedStoreData = JSON.parse(userLognDetails);
+            // console.log(transformedStoreData);
+            setWaiter_id(transformedStoreData.waiter_id)
+            setStore_id(transformedStoreData.store_id)
+        };
+        fetchDataAsync();
+    }, []);
+
+    const handleErrorMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 3000);
+    };
+
+    const handleSuccessMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setSuccessMessage('');
+        }, 3000);
+    };
 
     const submitData = async () => {
-        try {
-
-            if (isUserName === '') {
-                setUserNameError('Please enter full name');
-            } else {
-                setUserNameError(null);
-            }
-
-            if (isMobileNumber.trim().length < 10 || !validatePhoneNum(isMobileNumber)) {
-                setMobileNumberError('Please enter vaild mobile number');
-            } else {
-                setMobileNumberError(null);
-            }
-
-            if (isUserEmail.trim().length == 0 || !validateEmail(isUserEmail)) {
-                setUserEmailError("Please enter vaild email address");
-            } else {
-                setUserEmailError(null);
-            }
-
-            if (isMessage === '') {
-                setMessageError('Please enter your message');
-            } else {
-                setMessageError(null);
-            }
-
-            setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=49bd3002dcbc1559ac7fad6a70f932b2a5e1950a");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", isWaiter_id);
-            formdata.append("store_id", isStore_id);
-            formdata.append("fldv_name", isUserName);
-            formdata.append("fldv_mobile", isMobileNumber);
-            formdata.append("fldv_email", isUserEmail);
-            formdata.append("fldt_msg", isMessage);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "feedback/savefeedback", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json ContactUs--->', json);
-            if (json.status === true) {
-                alert(json.message)
-                setUserName(null);
-                setUserEmail(null);
-                setMobileNumber(null);
-                setMessage(null)
-            } else {
-                alert(json.message)
-            }
-        } catch (error) {
-            console.log(error.message);
+        if (!isUserName) {
+            handleErrorMsg()
+            setErrorMessage('Please enter full name');
+            return
         }
-    }
+        if (isMobileNumber.trim().length < 10 || !validatePhoneNum(isMobileNumber)) {
+            handleErrorMsg()
+            setErrorMessage('Please enter vaild mobile number');
+            return;
+        }
+        if (isUserEmail.trim().length == 0 || !validateEmail(isUserEmail)) {
+            handleErrorMsg();
+            setErrorMessage("Please enter vaild email address");
+            return;
+        }
+        if (!isMessage) {
+            handleErrorMsg()
+            setErrorMessage('Please enter your message');
+            return;
+        }
+        setLoading(true)
+        const response = await SavefeedbackApi(isWaiter_id, isStore_id, isUserName, isMobileNumber, isUserEmail, isMessage);
+        setLoading(false)
+        console.log('response--->', response);
+        if (response.status == true) {
+            handleSuccessMsg()
+            setSuccessMessage(response.message)
+            setUserName('');
+            setUserEmail('');
+            setMobileNumber('');
+            setMessage('')
+        } else {
+            handleErrorMsg()
+            setErrorMessage(response.message)
+        }
+    };
 
     if (isLoading) {
         return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
@@ -118,6 +115,21 @@ const ContactUs = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
+            {errorMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim
+                }]}>
+                    <Text style={styles.snackbarText}>{errorMessage}</Text>
+                </Animated.View>
+            )}
+
+            {isSuccessMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim, backgroundColor: '#28a745'
+                }]}>
+                    <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
+                </Animated.View>
+            )}
             <Header
                 onPress={() => navigation.openDrawer()}
             />
@@ -134,7 +146,6 @@ const ContactUs = ({ navigation }) => {
                         value={isUserName}
                         setValue={setUserName}
                     />
-                    {isUserNameError ? <Text style={styles.errorText}>{isUserNameError}</Text> : null}
 
                     <View style={{ marginTop: 20 }}>
                         <Input
@@ -146,7 +157,6 @@ const ContactUs = ({ navigation }) => {
                             maxLength={10}
                         />
                     </View>
-                    {isMobileNumberError ? <Text style={styles.errorText}>{isMobileNumberError}</Text> : null}
 
                     <View style={{ marginTop: 20 }}>
                         <Input
@@ -156,7 +166,6 @@ const ContactUs = ({ navigation }) => {
                             setValue={setUserEmail}
                         />
                     </View>
-                    {isUserEmailError ? <Text style={styles.errorText}>{isUserEmailError}</Text> : null}
 
                     <View style={{ marginTop: 20 }}>
                         <CustomTextArea
@@ -167,7 +176,6 @@ const ContactUs = ({ navigation }) => {
                             setValue={setMessage}
                         />
                     </View>
-                    {isMessageError ? <Text style={styles.errorText}>{isMessageError}</Text> : null}
 
                     <View style={{ marginTop: 20 }}>
                         <PrimaryBtn
@@ -225,5 +233,22 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         lineHeight: 18,
         color: COLORS.brand.error,
-    }
+    },
+    snackbar: {
+        backgroundColor: '#C62828',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1,
+        height: 45,
+        padding: 5,
+        justifyContent: 'center'
+    },
+    snackbarText: {
+        color: '#FFFFFF',
+        fontSize: SIZES.font,
+        fontFamily: FONT.InterRegular,
+        textAlign: 'center'
+    },
 })

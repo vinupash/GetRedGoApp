@@ -113,35 +113,35 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
 
     console.log('isUploadAllowed--->', isUploadAllowed);
 
-    const AllTableData = () => {
-        return isAllTablesData.map(allTableInfoData => {
-            return (
-                <View style={styles.productBox} key={allTableInfoData.fldi_id}>
-                    <Image source={{ uri: allTableInfoData.fldv_image }} style={styles.ProductImage} />
-                    <View style={styles.productDetails}>
-                        <View style={{ width: '50%' }}>
-                            <Text style={styles.cardTitle}>Uploaded by</Text>
-                            <Text style={styles.cardText}>Suresh Yadav</Text>
-                        </View>
-                        <View style={{ width: '50%' }}>
-                            <Text style={styles.cardTitle}>Uploaded on</Text>
-                            <Text style={styles.cardText}>{moment(allTableInfoData.flddt_date_added).format('Do MMMM YYYY')}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.productDetails}>
-                        <View style={{ width: '50%' }}>
-                            <Text style={styles.cardTitle}>Status</Text>
-                            <Text style={styles.cardText}>{allTableInfoData.flg_status == 0 ? 'Approved' : 'Not-Approved'}</Text>
-                        </View>
-                        <View style={{ width: '50%' }}>
-                            <Text style={styles.cardTitle}>Pts</Text>
-                            <Text style={styles.cardText}>5</Text>
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-    }
+    // const AllTableData = () => {
+    //     return isAllTablesData.map(allTableInfoData => {
+    //         return (
+    //             <View style={styles.productBox} key={allTableInfoData.fldi_id}>
+    //                 <Image source={{ uri: allTableInfoData.fldv_image }} style={styles.ProductImage} />
+    //                 <View style={styles.productDetails}>
+    //                     <View style={{ width: '50%' }}>
+    //                         <Text style={styles.cardTitle}>Uploaded by</Text>
+    //                         <Text style={styles.cardText}>Suresh Yadav</Text>
+    //                     </View>
+    //                     <View style={{ width: '50%' }}>
+    //                         <Text style={styles.cardTitle}>Uploaded on</Text>
+    //                         <Text style={styles.cardText}>{moment(allTableInfoData.flddt_date_added).format('Do MMMM YYYY')}</Text>
+    //                     </View>
+    //                 </View>
+    //                 <View style={styles.productDetails}>
+    //                     <View style={{ width: '50%' }}>
+    //                         <Text style={styles.cardTitle}>Status</Text>
+    //                         <Text style={styles.cardText}>{allTableInfoData.flg_status == 0 ? 'Approved' : 'Not-Approved'}</Text>
+    //                     </View>
+    //                     <View style={{ width: '50%' }}>
+    //                         <Text style={styles.cardTitle}>Pts</Text>
+    //                         <Text style={styles.cardText}>5</Text>
+    //                     </View>
+    //                 </View>
+    //             </View>
+    //         )
+    //     })
+    // }
 
     const ImageUploadCoke = async () => {
         try {
@@ -215,227 +215,263 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
         }
     }
 
-    const requestCameraPermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.CAMERA,
-                    {
-                        title: 'Camera Permission',
-                        message: 'App needs camera permission',
-                    },
-                );
-                // If CAMERA Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.warn(err);
-                return false;
+    const ImageUploadCokeCombo = async () => {
+        try {
+            setLoading(true);
+
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+            var formdata = new FormData();
+            formdata.append("waiter_id", isWaiter_id);
+            formdata.append("store_id", isStore_id);
+            formdata.append("imagetype", 'combo');
+            formdata.append("menutype", 'coke zero');
+            formdata.append("upload_img", isTableImageType, isTableImagePath);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
+            const json = await response.json();
+            setLoading(false);
+            console.log('json HotelDetails TableImage--->', json);
+
+            if (json.status === true) {
+                alert(json.message);
+            } else {
+                alert(json.message);
             }
-        } else return true;
-    };
-
-    const requestExternalWritePermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                    {
-                        title: 'External Storage Write Permission',
-                        message: 'App needs write permission',
-                    },
-                );
-                // If WRITE_EXTERNAL_STORAGE Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.warn(err);
-                alert('Write permission err', err);
-            }
-            return false;
-        } else return true;
-    };
-
-    const captureImageCoke = async (type) => {
-        setImageType('coke')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    ImageUploadCoke()
-                }
-
-                if (!response.uri) {
-                    // const resitem = response && response.assets[0]
-                    // const img = {
-                    //     uri: resitem.uri,
-                    //     name: resitem.fileName,
-                    //     type: resitem.type
-                    // }
-                    // console.log('img--->', img);
-                    // console.log('setImage--->', response.assets[0].uri);
-                    // setTableImagePath(response.assets[0].uri)
-                    // setTableImageType(img)
-                    // { ImageUploadCoke() }
-                }
-
-            });
+        } catch (error) {
+            console.log(error.message);
         }
-    };
+    }
 
-    const captureImageCokeZero = async (type) => {
-        setImageType('coke zero')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
+    // const requestCameraPermission = async () => {
+    //     if (Platform.OS === 'android') {
+    //         try {
+    //             const granted = await PermissionsAndroid.request(
+    //                 PermissionsAndroid.PERMISSIONS.CAMERA,
+    //                 {
+    //                     title: 'Camera Permission',
+    //                     message: 'App needs camera permission',
+    //                 },
+    //             );
+    //             // If CAMERA Permission is granted
+    //             return granted === PermissionsAndroid.RESULTS.GRANTED;
+    //         } catch (err) {
+    //             console.warn(err);
+    //             return false;
+    //         }
+    //     } else return true;
+    // };
 
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    { ImageUploadCoke() }
-                }
+    // const requestExternalWritePermission = async () => {
+    //     if (Platform.OS === 'android') {
+    //         try {
+    //             const granted = await PermissionsAndroid.request(
+    //                 PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    //                 {
+    //                     title: 'External Storage Write Permission',
+    //                     message: 'App needs write permission',
+    //                 },
+    //             );
+    //             // If WRITE_EXTERNAL_STORAGE Permission is granted
+    //             return granted === PermissionsAndroid.RESULTS.GRANTED;
+    //         } catch (err) {
+    //             console.warn(err);
+    //             alert('Write permission err', err);
+    //         }
+    //         return false;
+    //     } else return true;
+    // };
 
-                // if (!response.uri) {
-                //     const resitem = response && response.assets[0]
-                //     const img = {
-                //         uri: resitem.uri,
-                //         name: resitem.fileName,
-                //         type: resitem.type
-                //     }
-                //     console.log('img--->', img);
-                //     console.log('setImage--->', response.assets[0].uri);
-                //     setTableImagePath(response.assets[0].uri)
-                //     setTableImageType(img)
-                //     { ImageUploadCokeZero() }
-                // }
+    // const captureImageCoke = async (type) => {
+    //     setImageType('coke')
+    //     let options = {
+    //         mediaType: type,
+    //         maxWidth: 300,
+    //         maxHeight: 550,
+    //         quality: 1,
+    //         videoQuality: 'low',
+    //         durationLimit: 30, //Video max duration in seconds
+    //         saveToPhotos: true,
+    //     };
+    //     let isCameraPermitted = await requestCameraPermission();
+    //     let isStoragePermitted = await requestExternalWritePermission();
+    //     if (isCameraPermitted && isStoragePermitted) {
+    //         launchCamera(options, (response) => {
+    //             console.log('Response--->', response);
 
-            });
-        }
-    };
+    //             if (response.didCancel) {
+    //                 alert('User cancelled camera picker');
+    //                 return;
+    //             } else if (response.errorCode == 'camera_unavailable') {
+    //                 alert('Camera not available on device');
+    //                 return;
+    //             } else if (response.errorCode == 'permission') {
+    //                 alert('Permission not satisfied');
+    //                 return;
+    //             } else if (response.errorCode == 'others') {
+    //                 alert(response.errorMessage);
+    //                 return;
+    //             } else {
+    //                 const resitem = response && response.assets[0]
+    //                 const img = {
+    //                     uri: resitem.uri,
+    //                     name: resitem.fileName,
+    //                     type: resitem.type
+    //                 }
+    //                 console.log('img--->', img);
+    //                 console.log('setImage--->', response.assets[0].uri);
+    //                 setTableImagePath(response.assets[0].uri)
+    //                 setTableImageType(img)
+    //                 ImageUploadCoke()
+    //             }
 
-    const captureImageCombo = async (type) => {
-        setImageType('combo')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
+    //             if (!response.uri) {
+    //                 // const resitem = response && response.assets[0]
+    //                 // const img = {
+    //                 //     uri: resitem.uri,
+    //                 //     name: resitem.fileName,
+    //                 //     type: resitem.type
+    //                 // }
+    //                 // console.log('img--->', img);
+    //                 // console.log('setImage--->', response.assets[0].uri);
+    //                 // setTableImagePath(response.assets[0].uri)
+    //                 // setTableImageType(img)
+    //                 // { ImageUploadCoke() }
+    //             }
 
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    { ImageUploadCoke() }
-                }
+    //         });
+    //     }
+    // };
 
-                // if (!response.uri) {
-                //     const resitem = response && response.assets[0]
-                //     const img = {
-                //         uri: resitem.uri,
-                //         name: resitem.fileName,
-                //         type: resitem.type
-                //     }
-                //     console.log('img--->', img);
-                //     console.log('setImage--->', response.assets[0].uri);
-                //     setTableImagePath(response.assets[0].uri)
-                //     setTableImageType(img)
-                //     { ImageUploadCokeZero() }
-                // }
+    // const captureImageCokeZero = async (type) => {
+    //     setImageType('coke zero')
+    //     let options = {
+    //         mediaType: type,
+    //         maxWidth: 300,
+    //         maxHeight: 550,
+    //         quality: 1,
+    //         videoQuality: 'low',
+    //         durationLimit: 30, //Video max duration in seconds
+    //         saveToPhotos: true,
+    //     };
+    //     let isCameraPermitted = await requestCameraPermission();
+    //     let isStoragePermitted = await requestExternalWritePermission();
+    //     if (isCameraPermitted && isStoragePermitted) {
+    //         launchCamera(options, (response) => {
+    //             console.log('Response--->', response);
 
-            });
-        }
-    };
+    //             if (response.didCancel) {
+    //                 alert('User cancelled camera picker');
+    //                 return;
+    //             } else if (response.errorCode == 'camera_unavailable') {
+    //                 alert('Camera not available on device');
+    //                 return;
+    //             } else if (response.errorCode == 'permission') {
+    //                 alert('Permission not satisfied');
+    //                 return;
+    //             } else if (response.errorCode == 'others') {
+    //                 alert(response.errorMessage);
+    //                 return;
+    //             } else {
+    //                 const resitem = response && response.assets[0]
+    //                 const img = {
+    //                     uri: resitem.uri,
+    //                     name: resitem.fileName,
+    //                     type: resitem.type
+    //                 }
+    //                 console.log('img--->', img);
+    //                 console.log('setImage--->', response.assets[0].uri);
+    //                 setTableImagePath(response.assets[0].uri)
+    //                 setTableImageType(img)
+    //                 { ImageUploadCokeZero() }
+    //             }
+
+    //             // if (!response.uri) {
+    //             //     const resitem = response && response.assets[0]
+    //             //     const img = {
+    //             //         uri: resitem.uri,
+    //             //         name: resitem.fileName,
+    //             //         type: resitem.type
+    //             //     }
+    //             //     console.log('img--->', img);
+    //             //     console.log('setImage--->', response.assets[0].uri);
+    //             //     setTableImagePath(response.assets[0].uri)
+    //             //     setTableImageType(img)
+    //             //     { ImageUploadCokeZero() }
+    //             // }
+
+    //         });
+    //     }
+    // };
+
+    // const captureImageCombo = async (type) => {
+    //     setImageType('combo')
+    //     let options = {
+    //         mediaType: type,
+    //         maxWidth: 300,
+    //         maxHeight: 550,
+    //         quality: 1,
+    //         videoQuality: 'low',
+    //         durationLimit: 30, //Video max duration in seconds
+    //         saveToPhotos: true,
+    //     };
+    //     let isCameraPermitted = await requestCameraPermission();
+    //     let isStoragePermitted = await requestExternalWritePermission();
+    //     if (isCameraPermitted && isStoragePermitted) {
+    //         launchCamera(options, (response) => {
+    //             console.log('Response--->', response);
+
+    //             if (response.didCancel) {
+    //                 alert('User cancelled camera picker');
+    //                 return;
+    //             } else if (response.errorCode == 'camera_unavailable') {
+    //                 alert('Camera not available on device');
+    //                 return;
+    //             } else if (response.errorCode == 'permission') {
+    //                 alert('Permission not satisfied');
+    //                 return;
+    //             } else if (response.errorCode == 'others') {
+    //                 alert(response.errorMessage);
+    //                 return;
+    //             } else {
+    //                 const resitem = response && response.assets[0]
+    //                 const img = {
+    //                     uri: resitem.uri,
+    //                     name: resitem.fileName,
+    //                     type: resitem.type
+    //                 }
+    //                 console.log('img--->', img);
+    //                 console.log('setImage--->', response.assets[0].uri);
+    //                 setTableImagePath(response.assets[0].uri)
+    //                 setTableImageType(img)
+    //                 { ImageUploadCoke() }
+    //             }
+
+    //             // if (!response.uri) {
+    //             //     const resitem = response && response.assets[0]
+    //             //     const img = {
+    //             //         uri: resitem.uri,
+    //             //         name: resitem.fileName,
+    //             //         type: resitem.type
+    //             //     }
+    //             //     console.log('img--->', img);
+    //             //     console.log('setImage--->', response.assets[0].uri);
+    //             //     setTableImagePath(response.assets[0].uri)
+    //             //     setTableImageType(img)
+    //             //     { ImageUploadCokeZero() }
+    //             // }
+
+    //         });
+    //     }
+    // };
 
     const notAllowed = () => {
         return alert('Not allowed')
@@ -470,8 +506,9 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
                 {/* {AllTableData()} */}
 
                 <TouchableOpacity
-                    // onPress={cokeImage}
-                    onPress={() => captureImageCoke('photo')}
+                    activeOpacity={0.85}
+                    onPress={ImageUploadCoke}
+                // onPress={() => captureImageCoke('photo')}
                 >
                     <ImageBackground style={styles.cardSection} source={assets.cardBgRed} resizeMode="cover">
                         <View style={{
@@ -497,8 +534,9 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    // onPress={cokeZeroImage}
-                    onPress={() => captureImageCokeZero('photo')}
+                    activeOpacity={0.85}
+                    onPress={ImageUploadCokeZero}
+                // onPress={() => captureImageCokeZero('photo')}
                 >
                     <ImageBackground style={styles.cardSection} source={assets.cardBgBlack} resizeMode="cover">
                         <View style={{
@@ -524,10 +562,11 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    // onPress={cokeZeroImage}
-                    onPress={() => captureImageCombo('photo')}
+                    activeOpacity={0.85}
+                    onPress={ImageUploadCokeCombo}
+                // onPress={() => captureImageCombo('photo')}
                 >
-                    <ImageBackground style={styles.cardSection} source={assets.cardBgBlack} resizeMode="cover">
+                    <ImageBackground style={styles.cardSection} source={assets.cardBgRed} resizeMode="cover">
                         <View style={{
                             padding: 10,
                             flex: 1
@@ -538,14 +577,14 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
                                 alignItems: 'center'
                             }}>
                                 <View style={{ width: '100%', padding: 10 }}>
-                                    <Text style={[styles.cardText, { fontSize: SIZES.medium }]}>Combo</Text>
+                                    <Text style={[styles.cardText, { fontSize: SIZES.medium }]}>Menu (Combo)</Text>
                                 </View>
                             </View>
 
                         </View>
 
                         <View style={[styles.cardPointBox]}>
-                            <SvgXml xml={CokeIconRed} width={43} height={46} />
+                            <SvgXml xml={CokeIconWhite} width={43} height={46} />
                         </View>
                     </ImageBackground>
                 </TouchableOpacity>

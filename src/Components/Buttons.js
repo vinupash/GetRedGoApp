@@ -10,6 +10,7 @@ export const PrimaryBtn = ({
 }) => {
     return (
         <TouchableOpacity
+            activeOpacity={0.85}
             style={styles.primaryBtn}
             onPress={onPress}
         >

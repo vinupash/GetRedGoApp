@@ -62,6 +62,7 @@ const EnterDetails = ({ navigation, route }) => {
             <View style={styles.topSection}>
                 <View style={styles.backIconSection}>
                     <TouchableOpacity
+                        activeOpacity={0.85}
                         style={styles.backIcon}
                         onPress={navigation.goBack}
                     >
