@@ -72,7 +72,7 @@ const HotelDetails = ({ navigation, route }) => {
             }
             setLoading(false)
             const transformedLoginData = JSON.parse(userLognDetails);
-            // console.log('transformedLoginData UploadPictures--->', transformedLoginData);
+            console.log('transformedLoginData UploadPictures--->', transformedLoginData);
             setWaiter_id(transformedLoginData.waiter_id);
             setStore_id(transformedLoginData.store_id);
 
@@ -84,7 +84,7 @@ const HotelDetails = ({ navigation, route }) => {
             }
             setLoading(false)
             const transformedStoreData = JSON.parse(userStoreDetails);
-            // console.log('transformedStoreData --->', transformedStoreData);
+            console.log('transformedStoreData --->', transformedStoreData);
             setStoreName(transformedStoreData.fldv_store_name)
         } catch (error) {
             console.log(error.message);
@@ -274,6 +274,54 @@ const HotelDetails = ({ navigation, route }) => {
         }
     };
 
+    const captureImageMenu = async (type) => {
+        setImageType('menu')
+        let options = {
+            mediaType: type,
+            maxWidth: 300,
+            maxHeight: 550,
+            quality: 1,
+            videoQuality: 'low',
+            durationLimit: 30, //Video max duration in seconds
+            saveToPhotos: true,
+        };
+        let isCameraPermitted = await requestCameraPermission();
+        let isStoragePermitted = await requestExternalWritePermission();
+        if (isCameraPermitted && isStoragePermitted) {
+            launchCamera(options, (response) => {
+                console.log('Response--->', response);
+
+                if (response.didCancel) {
+                    alert('User cancelled camera picker');
+                    return;
+                } else if (response.errorCode == 'camera_unavailable') {
+                    alert('Camera not available on device');
+                    return;
+                } else if (response.errorCode == 'permission') {
+                    alert('Permission not satisfied');
+                    return;
+                } else if (response.errorCode == 'others') {
+                    alert(response.errorMessage);
+                    return;
+                } else {
+                    const resitem = response && response.assets[0]
+                    const img = {
+                        uri: resitem.uri,
+                        name: resitem.fileName,
+                        type: resitem.type
+                    }
+                    console.log('img--->', img);
+                    console.log('setImage--->', response.assets[0].uri);
+                    setTableImagePath(response.assets[0].uri)
+                    setTableImageType(img)
+                    setImageType('menu')
+                    ImageUploadCombo()
+                }
+
+            });
+        }
+    };
+
     const UploadAllowed = async () => {
         try {
             setLoading(true);
@@ -400,6 +448,41 @@ const HotelDetails = ({ navigation, route }) => {
             const json = await response.json();
             setLoading(false);
             console.log('json HotelDetails TableImage--->', json);
+
+            if (json.status === true) {
+                alert(json.message);
+            } else {
+                alert(json.message);
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    const ImageUploadCombo = async () => {
+        try {
+            setLoading(true);
+
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+            var formdata = new FormData();
+            formdata.append("waiter_id", isWaiter_id);
+            formdata.append("store_id", isStore_id);
+            formdata.append("imagetype", 'menu');
+            formdata.append("upload_img", isTableImageType, isTableImagePath);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
+            const json = await response.json();
+            setLoading(false);
+            console.log('json HotelDetails ComboImage--->', json);
 
             if (json.status === true) {
                 alert(json.message);
@@ -670,7 +753,7 @@ const HotelDetails = ({ navigation, route }) => {
                             padding: 10,
                             flex: 1
                         }}>
-                            <Text style={styles.cardUserName}>Menu</Text>
+                            <Text style={styles.cardUserName}>Menu (Combo)</Text>
 
                             <View style={{
                                 flexDirection: 'row',
@@ -678,7 +761,7 @@ const HotelDetails = ({ navigation, route }) => {
                                 alignItems: 'center'
                             }}>
                                 <View style={{ width: '50%' }}>
-                                    {isUploadAllowedOutsite == 0 ?
+                                    {isUploadAllowedMenu == 0 ?
                                         <TouchableOpacity
                                             activeOpacity={0.85}
                                             // onPress={notAllowed}
@@ -691,15 +774,10 @@ const HotelDetails = ({ navigation, route }) => {
                                             <Text style={styles.btnTextUpload}>Upload</Text>
                                         </TouchableOpacity>
                                         :
+
                                         <TouchableOpacity
                                             activeOpacity={0.85}
-                                            // onPress={() => captureImageMenu('photo')}
-                                            // onPress={() => navigation.navigate('View All Menu Upload', {
-
-                                            // })}
-                                            onPress={() => navigation.navigate('HotelDetailsNavigation', {
-                                                screen: 'View All Menu Upload',
-                                            })}
+                                            onPress={() => captureImageMenu('photo')}
                                             style={[styles.btnUpload,
                                             {
                                                 backgroundColor: COLORS.brand.error
@@ -708,6 +786,23 @@ const HotelDetails = ({ navigation, route }) => {
                                         >
                                             <Text style={styles.btnTextUpload}>Upload</Text>
                                         </TouchableOpacity>
+                                        // <TouchableOpacity
+                                        //     activeOpacity={0.85}
+                                        //     onPress={() => captureImageMenu('photo')}
+                                        // onPress={() => navigation.navigate('View All Menu Upload', {
+
+                                        // })}
+                                        // onPress={() => navigation.navigate('HotelDetailsNavigation', {
+                                        //     screen: 'View All Menu Upload',
+                                        // })}
+                                        // style={[styles.btnUpload,
+                                        // {
+                                        //     backgroundColor: COLORS.brand.error
+                                        // }
+                                        // ]}
+                                        // >
+                                        //     <Text style={styles.btnTextUpload}>Upload</Text>
+                                        // </TouchableOpacity>
                                     }
                                     {/* <TouchableOpacity
                                         onPress={() => captureImageMenu('photo')}

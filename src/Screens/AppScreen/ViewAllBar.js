@@ -187,6 +187,7 @@ const ViewAllBar = ({ navigation, route }) => {
 
             if (json.status === true) {
                 alert(json.message);
+                UploadAllowed()
             } else {
                 alert(json.message);
             }

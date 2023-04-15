@@ -27,6 +27,9 @@ const ViewAllMenu = ({ navigation, route }) => {
     const [isWaiter_id, setWaiter_id] = useState('');
     const [isStore_id, setStore_id] = useState('');
     const [isUploadAllowed, setUploadAllowed] = useState('');
+    const [dataSource, setDataSource] = useState([]);
+    const [offset, setOffset] = useState(1);
+    const [isTotalPages, setTotalPages] = useState('');
 
     useEffect(() => {
         UserData()
@@ -113,6 +116,10 @@ const ViewAllMenu = ({ navigation, route }) => {
             console.log('json ViewAllMenu--->', json);
             if (json.status === 'success') {
                 setAllTablesData(json.result)
+                setTotalPages(json.number_of_pages)
+                setOffset(offset + 1);
+                //Increasing the offset for the next API call
+                setDataSource([...dataSource, ...json.result]);
             } else {
                 alert(json.message)
             }
@@ -230,7 +237,7 @@ const ViewAllMenu = ({ navigation, route }) => {
     };
 
     const captureImageCoke = async (type) => {
-        setImageType('coke')
+        setImageType('menu')
         let options = {
             mediaType: type,
             maxWidth: 300,
@@ -269,7 +276,7 @@ const ViewAllMenu = ({ navigation, route }) => {
                     console.log('setImage--->', response.assets[0].uri);
                     setTableImagePath(response.assets[0].uri)
                     setTableImageType(img)
-                    setImageType('coke')
+                    setImageType('menu')
                     { ImageUpload() }
                 }
 
@@ -346,6 +353,32 @@ const ViewAllMenu = ({ navigation, route }) => {
         return alert('Not allowed')
     }
 
+    const renderFooter = () => {
+        return (
+            <View style={styles.footer}>
+                {offset <= isTotalPages ? (
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        onPress={UserData}
+                        style={styles.loadMoreBtn}>
+                        <Text style={{
+                            color: COLORS.brand.white,
+                            fontFamily: FONT.InterRegular,
+                            color: COLORS.brand.textColor,
+                            fontSize: SIZES.small
+                        }}>Load More</Text>
+                        {isLoading ? (
+                            <ActivityIndicator
+                                color="white"
+                                style={{ marginLeft: 8 }} />
+                        ) : null}
+                    </TouchableOpacity>
+                ) :
+                    null}
+            </View>
+        );
+    };
+
     if (isLoading) {
         return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
     }
@@ -360,7 +393,7 @@ const ViewAllMenu = ({ navigation, route }) => {
                 onPress={() => navigation.openDrawer()}
             />
             <View style={styles.btnTextGroup}>
-                <Text style={styles.pageTitle}>Upload Menus</Text>
+                <Text style={styles.pageTitle}>Upload Menu (Combo)</Text>
 
                 {/* <TouchableOpacity
                     onPress={isUploadAllowed == 0 ? notAllowed : tableImage}
@@ -368,11 +401,33 @@ const ViewAllMenu = ({ navigation, route }) => {
                 >
                     <Text style={styles.btnText}>Upload New</Text>
                 </TouchableOpacity> */}
+                {isUploadAllowed == 0 ?
+                    <>
+                        {/* <TouchableOpacity
+                    onPress={notAllowed}
+                    style={[styles.btnView]}
+                >
+                    <Text style={styles.btnText}>Upload New</Text>
+                </TouchableOpacity> */}
+                    </>
+                    :
+                    <TouchableOpacity
+                        activeOpacity={0.85}
+                        onPress={() => captureImageCoke('photo')}
+                        style={[styles.btnView]}
+                    >
+                        <Text style={styles.btnText}>Upload New</Text>
+                    </TouchableOpacity>
+                }
             </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
             >
-                {AllTableData()}
+                {!dataSource.length > 0 ? <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text> :
+                    <>
+                        {AllTableData()}
+                        {renderFooter()}
+                    </>}
 
                 {/* <TouchableOpacity
                     // onPress={cokeImage}
