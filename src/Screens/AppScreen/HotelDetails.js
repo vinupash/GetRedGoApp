@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // Import required components
 import {
     SafeAreaView,
@@ -13,7 +13,8 @@ import {
     Dimensions,
     StatusBar,
     ScrollView,
-    ImageBackground
+    ImageBackground,
+    Animated
 } from 'react-native';
 import {
     launchCamera,
@@ -34,6 +35,9 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 import { useIsFocused } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
+import { ImageUploadBarApi, ImageUploadOutsiteApi, ImageUploadTableApi, UploadAllowedApi } from '../../Constants/ApiCall';
+import moment from 'moment';
+import * as ImagePicker from 'react-native-image-crop-picker';
 
 const HotelDetails = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
@@ -51,313 +55,89 @@ const HotelDetails = ({ navigation, route }) => {
     const isFocused = useIsFocused()
     const { user_points } = route.params;
     const routepage = useRoute();
-
-    console.log('Current route name:', routepage.name);
+    const [isTableUploadDate, setTtableUploadDate] = useState('')
+    const [isBarDate, setBarDate] = useState('')
+    const [isOutsiteDate, setOutsiteDate] = useState('')
+    const [isMenuDate, setMenuDate] = useState('')
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSuccessMessage, setSuccessMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        UserAsyncStorageData()
-        // UserData()
-        UploadAllowed()
+        fetchDataAsync();
         setPoints(user_points)
-    }, [isFocused])
-    // console.log('--->', userPoints.user_points);
+    }, [isFocused]);
 
-    const UserAsyncStorageData = async () => {
+    const fetchDataAsync = async () => {
+        setLoading(true)
+        const userLognDetails = await AsyncStorage.getItem("userData");
+        if (!userLognDetails) {
+            // Alert.alert("Unable to fetch mobile number, Login again");
+            return;
+        }
+        const transformedLoginData = JSON.parse(userLognDetails);
+        const userStoreDetails = await AsyncStorage.getItem("userStoreDetails");
+        if (!userStoreDetails) {
+            // Alert.alert("Unable to fetch mobile number, Login again");
+            return;
+        }
+        const transformedStoreData = JSON.parse(userStoreDetails);
+        // console.log('transformedStoreData --->', transformedStoreData);
+        // console.log('transformedLoginData Hotel--->', transformedLoginData.waiter_id);
+        const waiterId = transformedLoginData.waiter_id;
+        const storeId = transformedLoginData.waiter_id;
+        setWaiter_id(waiterId)
+        setStore_id(storeId)
+        const responseUploadAllowed = await UploadAllowedApi(waiterId, storeId);
+        setLoading(false)
+        setStoreName(transformedStoreData.fldv_store_name)
+        // user upload date and time
+        setTtableUploadDate(responseUploadAllowed.tableUpload)
+        setBarDate(responseUploadAllowed.barUpload)
+        setOutsiteDate(responseUploadAllowed.outsideUpload)
+        setMenuDate(responseUploadAllowed.menuUpload)
+
+        // user upload approved
+        setUploadAllowedTable(responseUploadAllowed.table)
+        setUploadAllowedBar(responseUploadAllowed.bar)
+        setUploadAllowedOutsite(responseUploadAllowed.outside)
+        setUploadAllowedMenu(responseUploadAllowed.menu)
+        console.log('responseUploadAllowed--->', responseUploadAllowed);
+    };
+
+    const handleErrorMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 5000);
+    };
+
+    const handleSuccessMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setSuccessMessage('');
+        }, 5000);
+    };
+
+    const ImageUploadTableApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
+        console.log("isTableImageType ", isTableImageType)
+        console.log("isTableImagePath ", isTableImagePath)
         try {
-            setLoading(true)
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-            setLoading(false)
-            const transformedLoginData = JSON.parse(userLognDetails);
-            console.log('transformedLoginData UploadPictures--->', transformedLoginData);
-            setWaiter_id(transformedLoginData.waiter_id);
-            setStore_id(transformedLoginData.store_id);
-
-            setLoading(true)
-            const userStoreDetails = await AsyncStorage.getItem("userStoreDetails");
-            if (!userStoreDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-            setLoading(false)
-            const transformedStoreData = JSON.parse(userStoreDetails);
-            console.log('transformedStoreData --->', transformedStoreData);
-            setStoreName(transformedStoreData.fldv_store_name)
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-    const requestCameraPermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.CAMERA,
-                    {
-                        title: 'Camera Permission',
-                        message: 'App needs camera permission',
-                    },
-                );
-                // If CAMERA Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.warn(err);
-                return false;
-            }
-        } else return true;
-    };
-
-    const requestExternalWritePermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                    {
-                        title: 'External Storage Write Permission',
-                        message: 'App needs write permission',
-                    },
-                );
-                // If WRITE_EXTERNAL_STORAGE Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.warn(err);
-                alert('Write permission err', err);
-            }
-            return false;
-        } else return true;
-    };
-
-    const captureImageTable = async (type) => {
-        setImageType('table')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    setImageType('table')
-                    ImageUploadTable()
-                }
-
-            });
-        }
-    };
-
-    const captureImageBar = async (type) => {
-        setImageType('bar')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    setImageType('bar')
-                    ImageUploadBar()
-                }
-
-            });
-        }
-    };
-
-    const captureImageOutsite = async (type) => {
-        setImageType('outsite')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    setImageType('outsite')
-                    ImageUploadOutsite()
-                }
-
-            });
-        }
-    };
-
-    const captureImageMenu = async (type) => {
-        setImageType('menu')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    setImageType('menu')
-                    ImageUploadCombo()
-                }
-
-            });
-        }
-    };
-
-    const UploadAllowed = async () => {
-        try {
-            setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=de024eb00ef8108547e846800b561484bb084e69");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", isWaiter_id);
-            formdata.append("store_id", isStore_id);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "image/isUploadAllowed", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json UploadAllowed--->', json);
-            setUploadAllowedTable(json.table)
-            setUploadAllowedBar(json.bar)
-            setUploadAllowedOutsite(json.outside)
-            setUploadAllowedMenu(json.menu)
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
-
-    const ImageUploadTable = async () => {
-        try {
-            setLoading(true);
-
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
 
@@ -374,60 +154,73 @@ const HotelDetails = ({ navigation, route }) => {
                 redirect: 'follow'
             };
 
-            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json HotelDetails TableImage--->', json);
-
-            if (json.status === true) {
-                alert(json.message);
-            } else {
-                alert(json.message);
-            }
+            fetch(baseUrl + "image/uploadImage", requestOptions)
+                .then(res => {
+                    return res;
+                }).then((data) => {
+                    return data.json()
+                }).then((dataJson) => {
+                    // fetchDataAsync();
+                    console.log("dataJson ", dataJson);
+                    // handleSuccessMsg()
+                    // setSuccessMessage(dataJson.message);
+                    if (dataJson.status === true) {
+                        fetchDataAsync();
+                        handleSuccessMsg()
+                        setSuccessMessage(dataJson.message);
+                    } else {
+                        handleErrorMsg()
+                        setErrorMessage(dataJson.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+            // const json = response.json();
+            // console.log(json);
+            //return response;
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    const ImageUploadBar = async () => {
-        try {
-            setLoading(true);
+    const captureImageTable = async (type) => {
+        ImagePicker.openCamera({
+            mediaType: type,
+            width: 300,
+            height: 400,
+            cropping: false,
+            quality: 0.5,
+        }).then(image => {
+            console.log('selected media ==', image);
+            console.log('Image type:', image.mime);
+            console.log('Image path:', image.path);
+            // const fileName = image.path.split('/').pop() || `image.${image.mime.split('/')[1]}`;
+            const fileName = image.path.split('/').pop();
+            console.log('Image name:', fileName);
 
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", isWaiter_id);
-            formdata.append("store_id", isStore_id);
-            formdata.append("imagetype", 'bar');
-            formdata.append("upload_img", isTableImageType, isTableImagePath);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json HotelDetails TableImage--->', json);
-
-            if (json.status === true) {
-                alert(json.message);
-            } else {
-                alert(json.message);
+            const img = {
+                uri: image.path,
+                name: fileName,
+                type: image.mime
             }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
 
-    const ImageUploadOutsite = async () => {
+            ImageUploadTableApi(isWaiter_id, isStore_id, img, image.path)
+        })
+            .catch(er => {
+                console.log(er);
+                alert(er);
+                if (er.code === 'E_PICKER_CANCELLED') {
+                    // here the solution
+                    return false;
+                }
+            });
+    };
+
+    const ImageUploadOutSiteApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
+        console.log("isTableImageType ", isTableImageType)
+        console.log("isTableImagePath ", isTableImagePath)
         try {
-            setLoading(true);
-
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
 
@@ -444,25 +237,73 @@ const HotelDetails = ({ navigation, route }) => {
                 redirect: 'follow'
             };
 
-            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json HotelDetails TableImage--->', json);
-
-            if (json.status === true) {
-                alert(json.message);
-            } else {
-                alert(json.message);
-            }
+            fetch(baseUrl + "image/uploadImage", requestOptions)
+                .then(res => {
+                    return res;
+                }).then((data) => {
+                    return data.json()
+                }).then((dataJson) => {
+                    // fetchDataAsync();
+                    console.log("dataJson ", dataJson);
+                    // handleSuccessMsg()
+                    // setSuccessMessage(dataJson.message);
+                    if (dataJson.status === true) {
+                        fetchDataAsync();
+                        handleSuccessMsg()
+                        setSuccessMessage(dataJson.message);
+                    } else {
+                        handleErrorMsg()
+                        setErrorMessage(dataJson.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+            // const json = response.json();
+            // console.log(json);
+            //return response;
         } catch (error) {
             console.log(error.message);
         }
     }
 
-    const ImageUploadCombo = async () => {
-        try {
-            setLoading(true);
+    const captureImageOutsite = async (type) => {
+        ImagePicker.openCamera({
+            mediaType: type,
+            width: 300,
+            height: 400,
+            cropping: false,
+            quality: 0.5,
+        }).then(image => {
+            console.log('selected media ==', image);
+            console.log('Image type:', image.mime);
+            console.log('Image path:', image.path);
+            // const fileName = image.path.split('/').pop() || `image.${image.mime.split('/')[1]}`;
+            const fileName = image.path.split('/').pop();
+            console.log('Image name:', fileName);
 
+            const img = {
+                uri: image.path,
+                name: fileName,
+                type: image.mime
+            }
+
+            ImageUploadOutSiteApi(isWaiter_id, isStore_id, img, image.path)
+        })
+            .catch(er => {
+                console.log(er);
+                alert(er);
+                if (er.code === 'E_PICKER_CANCELLED') {
+                    // here the solution
+                    return false;
+                }
+            });
+    };
+
+    const ImageUploadMenuApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
+        console.log("isTableImageType ", isTableImageType)
+        console.log("isTableImagePath ", isTableImagePath)
+        try {
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
 
@@ -479,54 +320,184 @@ const HotelDetails = ({ navigation, route }) => {
                 redirect: 'follow'
             };
 
-            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json HotelDetails ComboImage--->', json);
-
-            if (json.status === true) {
-                alert(json.message);
-            } else {
-                alert(json.message);
-            }
+            fetch(baseUrl + "image/uploadImage", requestOptions)
+                .then(res => {
+                    return res;
+                }).then((data) => {
+                    return data.json()
+                }).then((dataJson) => {
+                    // fetchDataAsync();
+                    console.log("dataJson ", dataJson);
+                    // handleSuccessMsg()
+                    // setSuccessMessage(dataJson.message);
+                    if (dataJson.status === true) {
+                        fetchDataAsync();
+                        handleSuccessMsg()
+                        setSuccessMessage(dataJson.message);
+                    } else {
+                        handleErrorMsg()
+                        setErrorMessage(dataJson.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+            // const json = response.json();
+            // console.log(json);
+            //return response;
         } catch (error) {
             console.log(error.message);
         }
     }
 
+    const captureImageMenu = async (type) => {
+        ImagePicker.openCamera({
+            mediaType: type,
+            width: 300,
+            height: 400,
+            cropping: false,
+            quality: 0.5,
+        }).then(image => {
+            console.log('selected media ==', image);
+            console.log('Image type:', image.mime);
+            console.log('Image path:', image.path);
+            // const fileName = image.path.split('/').pop() || `image.${image.mime.split('/')[1]}`;
+            const fileName = image.path.split('/').pop();
+            console.log('Image name:', fileName);
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+            const img = {
+                uri: image.path,
+                name: fileName,
+                type: image.mime
+            }
+
+            ImageUploadMenuApi(isWaiter_id, isStore_id, img, image.path)
+        })
+            .catch(er => {
+                console.log(er);
+                alert(er);
+                if (er.code === 'E_PICKER_CANCELLED') {
+                    // here the solution
+                    return false;
+                }
+            });
+    };
+
+    const ImageUploadBarApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
+        console.log("isTableImageType ", isTableImageType)
+        console.log("isTableImagePath ", isTableImagePath)
+        try {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+            var formdata = new FormData();
+            formdata.append("waiter_id", isWaiter_id);
+            formdata.append("store_id", isStore_id);
+            formdata.append("imagetype", 'bar');
+            formdata.append("upload_img", isTableImageType, isTableImagePath);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch(baseUrl + "image/uploadImage", requestOptions)
+                .then(res => {
+                    return res;
+                }).then((data) => {
+                    return data.json()
+                }).then((dataJson) => {
+                    // fetchDataAsync();
+                    console.log("dataJson ", dataJson);
+                    // handleSuccessMsg()
+                    // setSuccessMessage(dataJson.message);
+                    if (dataJson.status === true) {
+                        fetchDataAsync();
+                        handleSuccessMsg()
+                        setSuccessMessage(dataJson.message);
+                    } else {
+                        handleErrorMsg()
+                        setErrorMessage(dataJson.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+            // const json = response.json();
+            // console.log(json);
+            //return response;
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
+    const captureImageBar = async (type) => {
+        ImagePicker.openCamera({
+            mediaType: type,
+            width: 300,
+            height: 400,
+            cropping: false,
+            quality: 0.5,
+        }).then(image => {
+            console.log('selected media ==', image);
+            console.log('Image type:', image.mime);
+            console.log('Image path:', image.path);
+            // const fileName = image.path.split('/').pop() || `image.${image.mime.split('/')[1]}`;
+            const fileName = image.path.split('/').pop();
+            console.log('Image name:', fileName);
+
+            const img = {
+                uri: image.path,
+                name: fileName,
+                type: image.mime
+            }
+
+            ImageUploadBarApi(isWaiter_id, isStore_id, img, image.path)
+        })
+            .catch(er => {
+                console.log(er);
+                alert(er);
+                if (er.code === 'E_PICKER_CANCELLED') {
+                    // here the solution
+                    return false;
+                }
+            });
+    };
+
+
     return (
-        // <SafeAreaView style={{ flex: 1 }}>
-        //     <Text style={styles.titleText}>
-        //         Example of Image Picker in React Native
-        //     </Text>
-        //     <View style={styles.container}>
-
-        //         <Text style={styles.textStyle}>{isTableImagePath}</Text>
-        //         <TouchableOpacity
-        //             activeOpacity={0.5}
-        //             style={styles.buttonStyle}
-        //             onPress={() => captureImageTable('photo')}>
-        //             <Text style={styles.textStyle}>
-        //                 Launch Camera for Image
-        //             </Text>
-        //         </TouchableOpacity>
-
-        //     </View>
-        // </SafeAreaView>
         <SafeAreaView style={styles.container}>
             <StatusBar
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
+            {errorMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim
+                }]}>
+                    <Text style={styles.snackbarText}>{errorMessage}</Text>
+                </Animated.View>
+            )}
+
+            {isSuccessMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim, backgroundColor: '#28a745'
+                }]}>
+                    <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
+                </Animated.View>
+            )}
             <Header
                 onPress={() => navigation.openDrawer()}
             />
-            <Text style={styles.pageTitle}>{isStoreName}</Text>
+            <View style={{
+                flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 8, width: windowWidth - 30,
+                alignSelf: 'center',
+            }}>
+                <Text style={styles.pageTitle}>{isStoreName}</Text>
+                {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ marginLeft: 5 }} /> : null}
+            </View>
             <View style={styles.pointsUserBox}>
                 <View style={styles.pointBox}>
                     <Text style={styles.pointsUser}>{isPoints}</Text>
@@ -556,7 +527,6 @@ const HotelDetails = ({ navigation, route }) => {
                                     {isUploadAllowedTable == 0 ?
                                         <TouchableOpacity
                                             activeOpacity={0.85}
-                                            // onPress={notAllowed}
                                             style={[styles.btnUpload,
                                             {
                                                 backgroundColor: '#C5C5C5'
@@ -568,7 +538,7 @@ const HotelDetails = ({ navigation, route }) => {
                                         :
                                         <TouchableOpacity
                                             activeOpacity={0.85}
-                                            onPress={() => captureImageTable('photo')}
+                                            onPress={() => { captureImageTable('photo') }}
                                             style={[styles.btnUpload,
                                             {
                                                 backgroundColor: COLORS.brand.error
@@ -581,8 +551,8 @@ const HotelDetails = ({ navigation, route }) => {
 
                                 </View>
                                 <View style={{ width: '50%' }}>
-                                    {/* <Text style={styles.cardTitle}>Last Uploaded</Text>
-                                    <Text style={styles.cardText}>11 Feb 23</Text> */}
+                                    <Text style={styles.cardTitle}>Last Uploaded</Text>
+                                    <Text style={styles.cardText}>{isTableUploadDate}</Text>
                                 </View>
                             </View>
 
@@ -640,20 +610,10 @@ const HotelDetails = ({ navigation, route }) => {
                                             <Text style={styles.btnTextUpload}>Upload</Text>
                                         </TouchableOpacity>
                                     }
-                                    {/* <TouchableOpacity
-                                        onPress={() => captureImageBar('photo')}
-                                        style={[styles.btnUpload,
-                                        {
-                                            backgroundColor: COLORS.brand.error
-                                        }
-                                        ]}
-                                    >
-                                        <Text style={styles.btnTextUpload}>Upload</Text>
-                                    </TouchableOpacity> */}
                                 </View>
                                 <View style={{ width: '50%' }}>
-                                    {/* <Text style={styles.cardTitle}>Last Uploaded</Text>
-                                    <Text style={styles.cardText}>11 Feb 23</Text> */}
+                                    <Text style={styles.cardTitle}>Last Uploaded</Text>
+                                    <Text style={styles.cardText}>{isBarDate}</Text>
                                 </View>
                             </View>
 
@@ -713,20 +673,11 @@ const HotelDetails = ({ navigation, route }) => {
                                             <Text style={styles.btnTextUpload}>Upload</Text>
                                         </TouchableOpacity>
                                     }
-                                    {/* <TouchableOpacity
-                                        onPress={() => captureImageOutsite('photo')}
-                                        style={[styles.btnUpload,
-                                        {
-                                            backgroundColor: COLORS.brand.error
-                                        }
-                                        ]}
-                                    >
-                                        <Text style={styles.btnTextUpload}>Upload</Text>
-                                    </TouchableOpacity> */}
+
                                 </View>
                                 <View style={{ width: '50%' }}>
-                                    {/* <Text style={styles.cardTitle}>Last Uploaded</Text>
-                                    <Text style={styles.cardText}>11 Feb 23</Text> */}
+                                    <Text style={styles.cardTitle}>Last Uploaded</Text>
+                                    <Text style={styles.cardText}>{isOutsiteDate}</Text>
                                 </View>
                             </View>
 
@@ -786,38 +737,11 @@ const HotelDetails = ({ navigation, route }) => {
                                         >
                                             <Text style={styles.btnTextUpload}>Upload</Text>
                                         </TouchableOpacity>
-                                        // <TouchableOpacity
-                                        //     activeOpacity={0.85}
-                                        //     onPress={() => captureImageMenu('photo')}
-                                        // onPress={() => navigation.navigate('View All Menu Upload', {
-
-                                        // })}
-                                        // onPress={() => navigation.navigate('HotelDetailsNavigation', {
-                                        //     screen: 'View All Menu Upload',
-                                        // })}
-                                        // style={[styles.btnUpload,
-                                        // {
-                                        //     backgroundColor: COLORS.brand.error
-                                        // }
-                                        // ]}
-                                        // >
-                                        //     <Text style={styles.btnTextUpload}>Upload</Text>
-                                        // </TouchableOpacity>
                                     }
-                                    {/* <TouchableOpacity
-                                        onPress={() => captureImageMenu('photo')}
-                                        style={[styles.btnUpload,
-                                        {
-                                            backgroundColor: COLORS.brand.error
-                                        }
-                                        ]}
-                                    >
-                                        <Text style={styles.btnTextUpload}>Upload</Text>
-                                    </TouchableOpacity> */}
                                 </View>
                                 <View style={{ width: '50%' }}>
-                                    {/* <Text style={styles.cardTitle}>Last Uploaded</Text>
-                                    <Text style={styles.cardText}>11 Feb 23</Text> */}
+                                    <Text style={styles.cardTitle}>Last Uploaded</Text>
+                                    <Text style={styles.cardText}>{isMenuDate}</Text>
                                 </View>
                             </View>
 
@@ -827,9 +751,6 @@ const HotelDetails = ({ navigation, route }) => {
                             <SvgXml xml={MenuIcon} width={32} height={42} />
                             <TouchableOpacity
                                 activeOpacity={0.85}
-                                // onPress={() => navigation.navigate('View All Menu', {
-
-                                // })}
                                 onPress={() => navigation.navigate('HotelDetailsNavigation', {
                                     screen: 'View All Menu',
                                 })}
@@ -853,15 +774,15 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.brand.background
     },
     pageTitle: {
-        marginBottom: 8,
+        // marginBottom: 8,
         textAlign: 'left',
-        width: windowWidth - 30,
+        // width: windowWidth - 30,
         alignSelf: 'center',
         fontSize: SIZES.extraLarge,
         fontFamily: FONT.InterBold,
         fontWeight: 700,
         color: COLORS.brand.textColor,
-        marginTop: 20
+        // marginTop: 20
     },
     pointsUserBox: {
         width: windowWidth - 30,
@@ -971,5 +892,23 @@ const styles = StyleSheet.create({
         fontFamily: FONT.InterRegular,
         color: COLORS.brand.textColor,
         fontSize: SIZES.small,
+    },
+    snackbar: {
+        backgroundColor: '#C62828',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1,
+        // height: 45,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+        justifyContent: 'center'
+    },
+    snackbarText: {
+        color: '#FFFFFF',
+        fontSize: SIZES.font,
+        fontFamily: FONT.InterRegular,
+        textAlign: 'center'
     },
 })

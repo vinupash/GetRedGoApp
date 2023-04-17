@@ -172,5 +172,81 @@ export const MyRewardsApi = async (waiterId) => {
     }
 };
 
+export const CustomerListingApi = async (waiterId, storeId, offset) => {
+    try {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+        var formdata = new FormData();
+        formdata.append("waiter_id", waiterId);
+        formdata.append("store_id", storeId);
+        formdata.append("page_no", offset);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(BASE_URL + "user/customerListing", requestOptions);
+        const json = await response.json();
+        return json;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+export const UploadAllowedApi = async (waiterId, storeId) => {
+    try {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+        var formdata = new FormData();
+        formdata.append("waiter_id", waiterId);
+        formdata.append("store_id", storeId);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(BASE_URL + "image/isUploadAllowed", requestOptions);
+        const json = await response.json();
+        return json;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const ImageListingTableData = async (isStore_id, offset) => {
+    try {
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+        var formdata = new FormData();
+        formdata.append("store_id", isStore_id);
+        formdata.append("imagetype", 'table');
+        formdata.append("page_no", offset);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        const response = await fetch(BASE_URL + "image/imageListing", requestOptions);
+        const json = await response.json();
+        return json;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
 
 

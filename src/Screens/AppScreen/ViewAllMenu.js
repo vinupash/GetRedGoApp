@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, TouchableOpacity, Image, ActivityIndicator, PermissionsAndroid, ImageBackground } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, TouchableOpacity, Image, ActivityIndicator, PermissionsAndroid, ImageBackground, Animated } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseUrl } from '../../Constants/Api';
 import { COLORS, SIZES, FONT, SHADOWS } from '../../Constants';
@@ -16,72 +16,59 @@ import {
     launchCamera,
     launchImageLibrary
 } from 'react-native-image-picker';
+import { UploadAllowedApi } from '../../Constants/ApiCall';
+import * as ImagePicker from 'react-native-image-crop-picker';
 
 const ViewAllMenu = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
     const [isAllTablesData, setAllTablesData] = useState([]);
     const isFocused = useIsFocused();
-    const [isTableImagePath, setTableImagePath] = useState(null);
-    const [isTableImageType, setTableImageType] = useState(null);
-    const [isImageType, setImageType] = useState('');
+    const [isTableImagePath, setTableImagePath] = useState('');
+    const [isTableImageType, setTableImageType] = useState('');
     const [isWaiter_id, setWaiter_id] = useState('');
     const [isStore_id, setStore_id] = useState('');
     const [isUploadAllowed, setUploadAllowed] = useState('');
     const [dataSource, setDataSource] = useState([]);
     const [offset, setOffset] = useState(1);
     const [isTotalPages, setTotalPages] = useState('');
+    const [isUploadAllowedTable, setUploadAllowedTable] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSuccessMessage, setSuccessMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const [shouldNavigate, setShouldNavigate] = useState(false);
 
     useEffect(() => {
-        UserData()
-        UploadAllowed()
-    }, [isFocused])
+        fetchDataAsync();
+    }, []);
 
-    const ImageUpload = async () => {
-        try {
-            setLoading(true);
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
+    useEffect(() => {
+        ImageListingData();
+    }, []);
 
-            const transformedLoginData = JSON.parse(userLognDetails);
-            console.log('transformedLoginData UploadPictures--->', transformedLoginData);
-            setWaiter_id(transformedLoginData.waiter_id);
-            setStore_id(transformedLoginData.store_id);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", isWaiter_id);
-            formdata.append("store_id", isStore_id);
-            formdata.append("imagetype", 'menu');
-            formdata.append("menutype", isImageType);
-            formdata.append("upload_img", isTableImageType, isTableImagePath);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "image/uploadImage", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json HotelDetails TableImage--->', json);
-
-            if (json.status === true) {
-                alert(json.message);
-            } else {
-                alert(json.message);
-            }
-        } catch (error) {
-            console.log(error.message);
+    const fetchDataAsync = async () => {
+        setLoading(true)
+        const userLognDetails = await AsyncStorage.getItem("userData");
+        if (!userLognDetails) {
+            // Alert.alert("Unable to fetch mobile number, Login again");
+            return;
         }
-    }
+        const transformedLoginData = JSON.parse(userLognDetails);
+        const userStoreDetails = await AsyncStorage.getItem("userStoreDetails");
+        const transformedStoreData = JSON.parse(userStoreDetails);
+        console.log('transformedStoreData --->', transformedStoreData);
+        // console.log('transformedLoginData Hotel--->', transformedLoginData.waiter_id);
+        const waiterId = transformedLoginData.waiter_id;
+        const storeId = transformedLoginData.waiter_id;
+        setWaiter_id(waiterId)
+        setStore_id(storeId)
+        const responseUploadAllowed = await UploadAllowedApi(waiterId, storeId);
+        setLoading(false)
+        setUploadAllowedTable(responseUploadAllowed.menu)
+        console.log('responseUploadAllowed--->', responseUploadAllowed);
+    };
 
-    const UserData = async () => {
+    const ImageListingData = async () => {
         try {
             setLoading(true)
             const userLognDetails = await AsyncStorage.getItem("userData");
@@ -89,11 +76,8 @@ const ViewAllMenu = ({ navigation, route }) => {
                 // Alert.alert("Unable to fetch mobile number, Login again");
                 return;
             }
-
             const transformedLoginData = JSON.parse(userLognDetails);
             console.log('transformedLoginData UploadPictures--->', transformedLoginData);
-            setWaiter_id(transformedLoginData.waiter_id);
-            setStore_id(transformedLoginData.store_id);
 
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
@@ -101,7 +85,7 @@ const ViewAllMenu = ({ navigation, route }) => {
             var formdata = new FormData();
             formdata.append("store_id", transformedLoginData.store_id);
             formdata.append("imagetype", 'menu');
-            formdata.append("page_no", "1");
+            formdata.append("page_no", offset);
 
             var requestOptions = {
                 method: 'POST',
@@ -113,7 +97,7 @@ const ViewAllMenu = ({ navigation, route }) => {
             const response = await fetch(baseUrl + "image/imageListing", requestOptions);
             const json = await response.json();
             setLoading(false);
-            console.log('json ViewAllMenu--->', json);
+            console.log('json ViewAllTable--->', json);
             if (json.status === 'success') {
                 setAllTablesData(json.result)
                 setTotalPages(json.number_of_pages)
@@ -129,46 +113,8 @@ const ViewAllMenu = ({ navigation, route }) => {
         }
     }
 
-    const UploadAllowed = async () => {
-        try {
-            setLoading(true);
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-
-            const transformedLoginData = JSON.parse(userLognDetails);
-            console.log('transformedLoginData UploadPictures--->', transformedLoginData);
-            setWaiter_id(transformedLoginData.waiter_id);
-            setStore_id(transformedLoginData.store_id);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=de024eb00ef8108547e846800b561484bb084e69");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", transformedLoginData.waiter_id);
-            formdata.append("store_id", transformedLoginData.store_id);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "image/isUploadAllowed", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json UploadAllowed--->', json);
-            setUploadAllowed(json.menu)
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
     const AllTableData = () => {
-        return isAllTablesData.map(allTableInfoData => {
+        return dataSource.map(allTableInfoData => {
             return (
                 <View style={styles.productBox} key={allTableInfoData.fldi_id}>
                     <Image source={{ uri: allTableInfoData.fldv_image }} style={styles.ProductImage} />
@@ -197,169 +143,13 @@ const ViewAllMenu = ({ navigation, route }) => {
         })
     }
 
-    const requestCameraPermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.CAMERA,
-                    {
-                        title: 'Camera Permission',
-                        message: 'App needs camera permission',
-                    },
-                );
-                // If CAMERA Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.warn(err);
-                return false;
-            }
-        } else return true;
-    };
-
-    const requestExternalWritePermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                    {
-                        title: 'External Storage Write Permission',
-                        message: 'App needs write permission',
-                    },
-                );
-                // If WRITE_EXTERNAL_STORAGE Permission is granted
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.warn(err);
-                alert('Write permission err', err);
-            }
-            return false;
-        } else return true;
-    };
-
-    const captureImageCoke = async (type) => {
-        setImageType('menu')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                } else {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    setImageType('menu')
-                    { ImageUpload() }
-                }
-
-                if (!response.uri) {
-                    // const resitem = response && response.assets[0]
-                    // const img = {
-                    //     uri: resitem.uri,
-                    //     name: resitem.fileName,
-                    //     type: resitem.type
-                    // }
-                    // console.log('img--->', img);
-                    // console.log('setImage--->', response.assets[0].uri);
-                    // setTableImagePath(response.assets[0].uri)
-                    // setTableImageType(img)
-                    // setImageType('coke')
-                    // { ImageUpload() }
-                }
-
-            });
-        }
-    };
-
-    const captureImageCokeZero = async (type) => {
-        setImageType('coke zero')
-        let options = {
-            mediaType: type,
-            maxWidth: 300,
-            maxHeight: 550,
-            quality: 1,
-            videoQuality: 'low',
-            durationLimit: 30, //Video max duration in seconds
-            saveToPhotos: true,
-        };
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (response) => {
-                console.log('Response--->', response);
-
-                if (response.didCancel) {
-                    alert('User cancelled camera picker');
-                    return;
-                } else if (response.errorCode == 'camera_unavailable') {
-                    alert('Camera not available on device');
-                    return;
-                } else if (response.errorCode == 'permission') {
-                    alert('Permission not satisfied');
-                    return;
-                } else if (response.errorCode == 'others') {
-                    alert(response.errorMessage);
-                    return;
-                }
-
-                if (!response.uri) {
-                    const resitem = response && response.assets[0]
-                    const img = {
-                        uri: resitem.uri,
-                        name: resitem.fileName,
-                        type: resitem.type
-                    }
-                    console.log('img--->', img);
-                    console.log('setImage--->', response.assets[0].uri);
-                    setTableImagePath(response.assets[0].uri)
-                    setTableImageType(img)
-                    setImageType('coke zero')
-                    { ImageUpload() }
-                }
-
-            });
-        }
-    };
-
-    const notAllowed = () => {
-        return alert('Not allowed')
-    }
-
     const renderFooter = () => {
         return (
             <View style={styles.footer}>
                 {offset <= isTotalPages ? (
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        onPress={UserData}
+                        onPress={ImageListingData}
                         style={styles.loadMoreBtn}>
                         <Text style={{
                             color: COLORS.brand.white,
@@ -379,9 +169,130 @@ const ViewAllMenu = ({ navigation, route }) => {
         );
     };
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    const handleErrorMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 5000);
+    };
+
+    const handleSuccessMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setSuccessMessage('');
+        }, 5000);
+    };
+
+    useEffect(() => {
+        if (shouldNavigate) {
+            setTimeout(() => {
+                navigation.goBack();
+            }, 5000);
+        }
+    }, [shouldNavigate]);
+
+    const ImageUploadMenuApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
+        console.log("isTableImageType ", isTableImageType)
+        console.log("isTableImagePath ", isTableImagePath)
+        try {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
+
+            var formdata = new FormData();
+            formdata.append("waiter_id", isWaiter_id);
+            formdata.append("store_id", isStore_id);
+            formdata.append("imagetype", 'menu');
+            formdata.append("upload_img", isTableImageType, isTableImagePath);
+
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch(baseUrl + "image/uploadImage", requestOptions)
+                .then(res => {
+                    return res;
+                }).then((data) => {
+                    return data.json()
+                }).then((dataJson) => {
+                    // fetchDataAsync();
+                    console.log("dataJson ", dataJson);
+                    // handleSuccessMsg()
+                    // setSuccessMessage(dataJson.message);
+                    if (dataJson.status === true) {
+                        fetchDataAsync()
+                        handleSuccessMsg()
+                        ImageListingData()
+                        setSuccessMessage(dataJson.message);
+                        setShouldNavigate(dataJson.status)
+                    } else {
+                        handleErrorMsg()
+                        setErrorMessage(dataJson.message)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+            // const json = response.json();
+            // console.log(json);
+            //return response;
+        } catch (error) {
+            console.log(error.message);
+        }
     }
+
+    const captureImageMenu = async (type) => {
+        ImagePicker.openCamera({
+            mediaType: type,
+            width: 300,
+            height: 400,
+            cropping: false,
+            quality: 0.5,
+        }).then(image => {
+            console.log('selected media ==', image);
+            console.log('Image type:', image.mime);
+            console.log('Image path:', image.path);
+            // const fileName = image.path.split('/').pop() || `image.${image.mime.split('/')[1]}`;
+            const fileName = image.path.split('/').pop();
+            console.log('Image name:', fileName);
+
+            const img = {
+                uri: image.path,
+                name: fileName,
+                type: image.mime
+            }
+
+            ImageUploadMenuApi(isWaiter_id, isStore_id, img, image.path)
+        })
+            .catch(er => {
+                console.log(er);
+                alert(er);
+                if (er.code === 'E_PICKER_CANCELLED') {
+                    // here the solution
+                    return false;
+                }
+            });
+    };
+
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
     return (
 
         <SafeAreaView style={styles.container}>
@@ -389,6 +300,21 @@ const ViewAllMenu = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
+            {errorMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim
+                }]}>
+                    <Text style={styles.snackbarText}>{errorMessage}</Text>
+                </Animated.View>
+            )}
+
+            {isSuccessMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim, backgroundColor: '#28a745'
+                }]}>
+                    <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
+                </Animated.View>
+            )}
             <Header
                 onPress={() => navigation.openDrawer()}
             />
@@ -401,7 +327,7 @@ const ViewAllMenu = ({ navigation, route }) => {
                 >
                     <Text style={styles.btnText}>Upload New</Text>
                 </TouchableOpacity> */}
-                {isUploadAllowed == 0 ?
+                {isUploadAllowedTable == 0 ?
                     <>
                         {/* <TouchableOpacity
                     onPress={notAllowed}
@@ -413,7 +339,7 @@ const ViewAllMenu = ({ navigation, route }) => {
                     :
                     <TouchableOpacity
                         activeOpacity={0.85}
-                        onPress={() => captureImageCoke('photo')}
+                        onPress={() => captureImageMenu('photo')}
                         style={[styles.btnView]}
                     >
                         <Text style={styles.btnText}>Upload New</Text>
@@ -428,60 +354,6 @@ const ViewAllMenu = ({ navigation, route }) => {
                         {AllTableData()}
                         {renderFooter()}
                     </>}
-
-                {/* <TouchableOpacity
-                    // onPress={cokeImage}
-                    onPress={() => captureImageCoke('photo')}
-                >
-                    <ImageBackground style={styles.cardSection} source={assets.cardBgRed} resizeMode="cover">
-                        <View style={{
-                            padding: 10,
-                            flex: 1
-                        }}>
-                            <View style={{
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                <View style={{ width: '100%', padding: 10 }}>
-                                    <Text style={[styles.cardText, { fontSize: SIZES.medium }]}>Coke</Text>
-                                </View>
-                            </View>
-
-                        </View>
-
-                        <View style={[styles.cardPointBox]}>
-                            <SvgXml xml={CokeIconWhite} width={43} height={46} />
-                        </View>
-                    </ImageBackground>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    // onPress={cokeZeroImage}
-                    onPress={() => captureImageCokeZero('photo')}
-                >
-                    <ImageBackground style={styles.cardSection} source={assets.cardBgBlack} resizeMode="cover">
-                        <View style={{
-                            padding: 10,
-                            flex: 1
-                        }}>
-                            <View style={{
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                <View style={{ width: '100%', padding: 10 }}>
-                                    <Text style={[styles.cardText, { fontSize: SIZES.medium }]}>Coke Zero</Text>
-                                </View>
-                            </View>
-
-                        </View>
-
-                        <View style={[styles.cardPointBox]}>
-                            <SvgXml xml={CokeIconRed} width={43} height={46} />
-                        </View>
-                    </ImageBackground>
-                </TouchableOpacity> */}
             </ScrollView>
 
         </SafeAreaView>
@@ -583,5 +455,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderTopRightRadius: 5,
         borderBottomRightRadius: 5,
+    },
+    snackbar: {
+        backgroundColor: '#C62828',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1,
+        // height: 45,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+        justifyContent: 'center'
+    },
+    snackbarText: {
+        color: '#FFFFFF',
+        fontSize: SIZES.font,
+        fontFamily: FONT.InterRegular,
+        textAlign: 'center'
     },
 })

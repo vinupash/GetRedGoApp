@@ -15,6 +15,7 @@ import Gift from '../../../assets/images/Gift';
 import Account from '../../../assets/images/Account';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+import * as ImagePicker from 'react-native-image-crop-picker';
 
 const Dashboard = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
@@ -36,6 +37,10 @@ const Dashboard = ({ navigation }) => {
     const fetchDataAsync = async () => {
         setLoading(true)
         const userLognDetails = await AsyncStorage.getItem("userData");
+        if (!userLognDetails) {
+            // Alert.alert("Unable to fetch mobile number, Login again");
+            return;
+        }
         const transformedLoginData = JSON.parse(userLognDetails);
         // console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
         const waiterId = transformedLoginData.waiter_id;
@@ -118,6 +123,16 @@ const Dashboard = ({ navigation }) => {
         }
     }
 
+    // const captureImageTable = () => {
+    //     ImagePicker.openCamera({
+    //         width: 300,
+    //         height: 400,
+    //         cropping: true,
+    //     }).then(image => {
+    //         console.log(image);
+    //     });
+    // };
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar
@@ -161,6 +176,7 @@ const Dashboard = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
                 {NavigationScreenData()}
+                {/* <Text onPress={captureImageTable}>Cool</Text> */}
             </View>
 
             <Modal

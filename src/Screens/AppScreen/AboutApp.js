@@ -17,7 +17,7 @@ const AboutApp = ({ navigation }) => {
             <Header
                 onPress={() => navigation.openDrawer()}
             />
-            <WebView source={{ uri: 'https://www.wallpaperflare.com/search?wallpaper=anime&page=4' }} style={{ flex: 1 }} />
+            <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/about' }} style={{ flex: 1, paddingTop: 50 }} />
             {/* <Text style={styles.pageTitle}>About App</Text> */}
 
             {/* <ScrollView

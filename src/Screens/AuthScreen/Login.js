@@ -193,8 +193,9 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         zIndex: 1,
-        height: 45,
-        padding: 5,
+        // height: 45,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
         justifyContent: 'center'
     },
     snackbarText: {

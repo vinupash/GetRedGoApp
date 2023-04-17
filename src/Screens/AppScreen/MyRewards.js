@@ -22,6 +22,10 @@ const MyRewards = ({ navigation }) => {
         const fetchDataAsync = async () => {
             setLoading(true)
             const userLognDetails = await AsyncStorage.getItem("userData");
+            if (!userLognDetails) {
+                // Alert.alert("Unable to fetch mobile number, Login again");
+                return;
+            }
             const transformedLoginData = JSON.parse(userLognDetails);
             console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
             const waiterId = transformedLoginData.waiter_id;

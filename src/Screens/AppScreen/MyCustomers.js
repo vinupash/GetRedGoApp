@@ -6,6 +6,7 @@ import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseUrl } from '../../Constants/Api';
 import moment from 'moment';
+import { CustomerListingApi } from '../../Constants/ApiCall';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -17,55 +18,34 @@ const MyCustomers = ({ navigation }) => {
     const [offset, setOffset] = useState(1);
     const [isTotalPages, setTotalPages] = useState('');
 
-    const getData = async () => {
-        try {
-            setLoading(true)
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-            setLoading(false)
-            const transformedLoginData = JSON.parse(userLognDetails);
-            console.log('transformedLoginData Navigation--->', transformedLoginData);
-            setLoading(true);
-            var myHeaders = new Headers();
-            myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
-            myHeaders.append("Cookie", "off_cc=f3eccae0981f4a2ca6cd3a7535a52b510b4d4149");
-
-            var formdata = new FormData();
-            formdata.append("waiter_id", transformedLoginData.waiter_id);
-            formdata.append("store_id", transformedLoginData.store_id);
-            formdata.append("page_no", offset);
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(baseUrl + "user/customerListing", requestOptions);
-            const json = await response.json();
-            setLoading(false);
-            console.log('json MyCustomers --->', json.result);
-            if (json.status === 'success') {
-                setTotalPages(json.number_of_pages)
-                setOffset(offset + 1);
-                //Increasing the offset for the next API call
-                setDataSource([...dataSource, ...json.result]);
-                setLoading(false);
-            } else {
-                console.log(json.message);
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
     useEffect(() => {
-        getData()
-    }, [])
+        fetchDataAsync();
+    }, []);
+
+    const fetchDataAsync = async () => {
+        setLoading(true)
+        const userLognDetails = await AsyncStorage.getItem("userData");
+        if (!userLognDetails) {
+            // Alert.alert("Unable to fetch mobile number, Login again");
+            return;
+        }
+        const transformedLoginData = JSON.parse(userLognDetails);
+        console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
+        const waiterId = transformedLoginData.waiter_id;
+        const storeId = transformedLoginData.waiter_id;
+        const responseUserData = await CustomerListingApi(waiterId, storeId, offset);
+        setLoading(false)
+        console.log('responseUserData--->', responseUserData);
+        if (responseUserData.status === 'success') {
+            setTotalPages(responseUserData.number_of_pages)
+            setOffset(offset + 1);
+            //Increasing the offset for the next API call
+            setDataSource([...dataSource, ...responseUserData.result]);
+            setLoading(false);
+        } else {
+            console.log(responseUserData.message);
+        }
+    };
 
     const CustomersScreenData = () => {
         return dataSource.map((CustomersInfoData, i) => {
@@ -75,7 +55,6 @@ const MyCustomers = ({ navigation }) => {
                         padding: 10,
                         flex: 1
                     }}>
-                        {/* <Text style={styles.cardUserName}>{CustomersInfoData.fldv_name ? CustomersInfoData.fldv_name : '-'}</Text> */}
 
                         <View style={{
                             flexDirection: 'row',
@@ -98,13 +77,10 @@ const MyCustomers = ({ navigation }) => {
                         }}>
                             <View style={{ width: '50%' }}>
                                 <Text style={styles.cardTitle}>Date</Text>
-                                {/* <Text style={styles.cardText}>{CustomersInfoData.flddt_date_added ? CustomersInfoData.flddt_date_added : '-'}</Text> */}
                                 <Text style={styles.cardText}>{CustomersInfoData.flddt_date_added ? moment(CustomersInfoData.flddt_date_added).format('Do MMMM YYYY') : '-'}</Text>
-                                {/* {moment(CustomersInfoData.flddt_date_added).format('Do MMMM YYYY')} */}
                             </View>
                             <View style={{ width: '50%' }}>
-                                {/* <Text style={styles.cardTitle}>Name</Text>
-                                <Text style={styles.cardText}>{CustomersInfoData.fldv_name ? CustomersInfoData.fldv_name : '-'}</Text> */}
+
                             </View>
                         </View>
 
@@ -126,7 +102,7 @@ const MyCustomers = ({ navigation }) => {
                 {offset <= isTotalPages ? (
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        onPress={getData}
+                        onPress={fetchDataAsync}
                         style={styles.loadMoreBtn}>
                         <Text style={[styles.btnText, { color: COLORS.brand.white }]}>Load More</Text>
                         {loading ? (
@@ -167,8 +143,12 @@ const MyCustomers = ({ navigation }) => {
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                 >
-                    {CustomersScreenData()}
-                    {renderFooter()}
+                    {!dataSource.length > 0 ? <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text> :
+                        <>
+                            {CustomersScreenData()}
+                            {renderFooter()}
+                        </>}
+
                 </ScrollView>
             </View>
         </SafeAreaView>

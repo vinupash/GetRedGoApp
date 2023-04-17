@@ -156,11 +156,11 @@ const CustomDrawer = (props) => {
                         active={currentPageName === 'Privacy Policy' ? activeItem : null}
                         onPress={() => { handleItemPress('Privacy Policy'); props.navigation.navigate('Privacy Policy'); }}
                     />
-                    {/* <DrawerItem
-                        title="About"
+                    <DrawerItem
+                        title="Rules of the Contest"
                         active={currentPageName === 'About' ? activeItem : null}
                         onPress={() => { handleItemPress('About'); props.navigation.navigate('About'); }}
-                    /> */}
+                    />
 
                 </View>
             </DrawerContentScrollView>

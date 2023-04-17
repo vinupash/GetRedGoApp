@@ -20,7 +20,7 @@ const WeeklyPrizeWinners = ({ navigation }) => {
 
     useEffect(() => {
         GetPrizeWinnersList()
-    }, [])
+    }, [isFocused])
 
     const GetPrizeWinnersList = async () => {
         try {
@@ -57,7 +57,7 @@ const WeeklyPrizeWinners = ({ navigation }) => {
     }
 
     const PrizeWinnersList = () => {
-        return dataSource.map((CustomersDetail, index) => {
+        return isPrizeWinners.map((CustomersDetail, index) => {
             return (
                 <View style={styles.cardSection}
                     key={index}>
@@ -207,12 +207,21 @@ const WeeklyPrizeWinners = ({ navigation }) => {
                 <View style={styles.inputSection}>
                     {/* <Text style={styles.dateDetailsText}>24th Feb 23</Text> */}
                     {/* {PrizeWinnersList()} */}
-                    {isPrizeWinners.length > 0 ?
+                    {/* {dataSource.length > 0 ?
                         <>
                             {PrizeWinnersList()}
-                            {/* {renderFooter()} */}
+                            {renderFooter()}
                         </>
-                        : <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text>}
+                        : <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text>} */}
+                    {isPrizeWinners == null ? <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text> :
+
+                        <>
+                            <>
+                                {PrizeWinnersList()}
+                                {/* {renderFooter()} */}
+                            </>
+                        </>
+                    }
                 </View>
             </ScrollView>
         </SafeAreaView>

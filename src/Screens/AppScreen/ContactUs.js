@@ -30,6 +30,10 @@ const ContactUs = ({ navigation }) => {
         const fetchDataAsync = async () => {
             setLoading(true)
             const userLognDetails = await AsyncStorage.getItem("userData");
+            if (!userLognDetails) {
+                // Alert.alert("Unable to fetch mobile number, Login again");
+                return;
+            }
             setLoading(false)
             const transformedStoreData = JSON.parse(userLognDetails);
             // console.log(transformedStoreData);
@@ -105,9 +109,9 @@ const ContactUs = ({ navigation }) => {
         }
     };
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -136,7 +140,14 @@ const ContactUs = ({ navigation }) => {
             <ScrollView
                 showsVerticalScrollIndicator={false}
             >
-                <Text style={styles.pageTitle}>Get in Touch</Text>
+                {/* <Text style={styles.pageTitle}>Get in Touch</Text> */}
+                <View style={{
+                    flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 8, width: windowWidth - 30,
+                    alignSelf: 'center',
+                }}>
+                    <Text style={styles.pageTitle}>Get in Touch</Text>
+                    {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ marginLeft: 5 }} /> : null}
+                </View>
                 <Text style={styles.pageSubTitle}>Have a query? Ask our team</Text>
 
                 <View style={styles.inputSection}>
@@ -199,16 +210,15 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.brand.background
     },
     pageTitle: {
-        marginBottom: 10,
+        // marginBottom: 8,
         textAlign: 'left',
-        width: windowWidth - 30,
+        // width: windowWidth - 30,
         alignSelf: 'center',
         fontSize: SIZES.extraLarge,
         fontFamily: FONT.InterBold,
-        fontWeight: '700',
+        fontWeight: 700,
         color: COLORS.brand.textColor,
-        marginTop: 20
-        // alignSelf: 'flex-start'
+        // marginTop: 20
     },
     pageSubTitle: {
         marginBottom: 14,
@@ -241,8 +251,9 @@ const styles = StyleSheet.create({
         right: 0,
         left: 0,
         zIndex: 1,
-        height: 45,
-        padding: 5,
+        // height: 45,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
         justifyContent: 'center'
     },
     snackbarText: {

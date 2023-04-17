@@ -19,7 +19,7 @@ const DailyPrizeWinners = ({ navigation }) => {
 
     useEffect(() => {
         GetPrizeWinnersList()
-    }, [])
+    }, [isFocused])
 
     const GetPrizeWinnersList = async () => {
         try {
@@ -55,7 +55,7 @@ const DailyPrizeWinners = ({ navigation }) => {
     }
 
     const PrizeWinnersList = () => {
-        return dataSource.map((CustomersDetail, index) => {
+        return isPrizeWinners.map((CustomersDetail, index) => {
             return (
                 <View style={styles.cardSection}
                     key={index}>
@@ -203,12 +203,21 @@ const DailyPrizeWinners = ({ navigation }) => {
             >
                 <View style={styles.inputSection}>
                     {/* <Text style={styles.dateDetailsText}>{moment(currentDate).format('Do MMM YYYY')}</Text> */}
-                    {isPrizeWinners.length > 0 ?
+                    {/* {isPrizeWinners.length > 0 ?
                         <>
                             {PrizeWinnersList()}
-                            {/* {renderFooter()} */}
-                        </> : <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text>}
+                            {renderFooter()}
+                        </> : <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text>} */}
                     {/* {PrizeWinnersList()} */}
+                    {isPrizeWinners == null ? <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text> :
+
+                        <>
+                            <>
+                                {PrizeWinnersList()}
+                                {/* {renderFooter()} */}
+                            </>
+                        </>
+                    }
                 </View>
             </ScrollView>
         </SafeAreaView>
