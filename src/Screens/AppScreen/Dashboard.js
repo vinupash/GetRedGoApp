@@ -125,20 +125,9 @@ const Dashboard = ({ navigation }) => {
         }
     }
 
-    const handleButtonPress = () => {
-        LocalNotification()
-    }
-
-
-    // const captureImageTable = () => {
-    //     ImagePicker.openCamera({
-    //         width: 300,
-    //         height: 400,
-    //         cropping: true,
-    //     }).then(image => {
-    //         console.log(image);
-    //     });
-    // };
+    // const handleButtonPress = () => {
+    //     LocalNotification()
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -183,7 +172,6 @@ const Dashboard = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
                 {NavigationScreenData()}
-                {/* <Text onPress={captureImageTable}>Cool</Text> */}
             </View>
 
             <Modal
