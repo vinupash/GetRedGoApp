@@ -227,7 +227,7 @@ const HotelDetails = ({ navigation, route }) => {
             var formdata = new FormData();
             formdata.append("waiter_id", isWaiter_id);
             formdata.append("store_id", isStore_id);
-            formdata.append("imagetype", 'outsite');
+            formdata.append("imagetype", 'outside');
             formdata.append("upload_img", isTableImageType, isTableImagePath);
 
             var requestOptions = {
@@ -640,7 +640,7 @@ const HotelDetails = ({ navigation, route }) => {
                             padding: 10,
                             flex: 1
                         }}>
-                            <Text style={styles.cardUserName}>Outsite</Text>
+                            <Text style={styles.cardUserName}>Outside</Text>
 
                             <View style={{
                                 flexDirection: 'row',

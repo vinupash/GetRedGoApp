@@ -208,7 +208,7 @@ const RewardsCatalogue = ({ navigation }) => {
                 >
                     <View style={{ justifyContent: 'center' }}>
                         <View style={{ paddingHorizontal: 8, backgroundColor: '#FFFFFF', borderRadius: 2, ...SHADOWS.light, paddingVertical: 5 }}>
-                            <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>4 monthly Winners get</Text>
+                            <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>Monthly Winners get</Text>
                         </View>
                         <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', marginTop: 8 }}>Gold Coin</Text>
                         <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Value 9999</Text>
@@ -225,7 +225,7 @@ const RewardsCatalogue = ({ navigation }) => {
                 >
                     <View style={{ justifyContent: 'center' }}>
                         <View style={{ paddingHorizontal: 8, backgroundColor: '#FFFFFF', borderRadius: 2, ...SHADOWS.light, paddingVertical: 5 }}>
-                            <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>2 Weekly Winners get</Text>
+                            <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>Weekly Winners get</Text>
                         </View>
                         <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', marginTop: 8 }}>Amazon Pay</Text>
                         <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Gift voucher Worth Rs.10000</Text>
@@ -242,7 +242,7 @@ const RewardsCatalogue = ({ navigation }) => {
                 >
                     <View style={{ justifyContent: 'center' }}>
                         <View style={{ backgroundColor: '#FFFFFF', borderRadius: 2, ...SHADOWS.light, paddingVertical: 5 }}>
-                            <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>8 Daily Winners</Text>
+                            <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>Daily Winners</Text>
                         </View>
                         <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', marginTop: 8 }}>Zomato</Text>
                         <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Gift voucher Worth Rs.250</Text>

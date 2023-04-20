@@ -122,13 +122,13 @@ const ViewAllTable = ({ navigation, route }) => {
                         </View>
                         <View style={{ width: '50%' }}>
                             <Text style={styles.cardTitle}>Uploaded on</Text>
-                            <Text style={styles.cardText}>{moment(allTableInfoData.flddt_date_updated).format('Do MMMM YYYY')}</Text>
+                            <Text style={styles.cardText}>{moment(allTableInfoData.flddt_date_added).format('Do MMMM YYYY')}</Text>
                         </View>
                     </View>
                     <View style={styles.productDetails}>
                         <View style={{ width: '50%' }}>
                             <Text style={styles.cardTitle}>Status</Text>
-                            <Text style={styles.cardText}>{allTableInfoData.flg_status == 0 ? 'Approved' : 'Not-Approved'}</Text>
+                            <Text style={styles.cardText}>{allTableInfoData.flg_status == 0 ? 'No action' : allTableInfoData.flg_status == 1 ? 'Approved' : 'Rejected'}</Text>
                         </View>
                         <View style={{ width: '50%' }}>
                             <Text style={styles.cardTitle}>Pts</Text>
@@ -151,7 +151,6 @@ const ViewAllTable = ({ navigation, route }) => {
                         <Text style={{
                             color: COLORS.brand.white,
                             fontFamily: FONT.InterRegular,
-                            color: COLORS.brand.textColor,
                             fontSize: SIZES.small
                         }}>Load More</Text>
                         {isLoading ? (
@@ -451,6 +450,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+        width: 150,
+        alignSelf: 'center',
+        marginBottom: 10
     },
     snackbar: {
         backgroundColor: '#C62828',

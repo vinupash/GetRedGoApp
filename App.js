@@ -4,9 +4,16 @@ import { Alert, BackHandler } from "react-native";
 import Navigation from './src/Navigations/Navigation.js';
 import { AuthProvider } from './src/Context/AuthContex.js';
 import NetInfo from "@react-native-community/netinfo";
-
+import { notificationListner, requestUserPermission } from './src/Services/NotificationServices.js';
+import RemotePushController from './src/Services/RemotePushController.js';
 const App = () => {
   const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(() => {
+    requestUserPermission()
+    notificationListner()
+  }, [])
+
 
   useEffect(() => {
 
@@ -52,6 +59,7 @@ const App = () => {
 
   return (
     <AuthProvider>
+      <RemotePushController />
       <Navigation />
     </AuthProvider>
   )

@@ -1,12 +1,13 @@
 const BASE_URL = 'https://demo.crayoninfotech.com/cocacola/api/';
 
-export const LoginApi = async (isMobileNumber) => {
+export const LoginApi = async (isMobileNumber, isDeviceTokan) => {
     try {
         var myHeaders = new Headers();
         myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
 
         var formdata = new FormData();
         formdata.append("mobile", isMobileNumber);
+        formdata.append("token", isDeviceTokan);
 
         var requestOptions = {
             method: 'POST',

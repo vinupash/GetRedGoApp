@@ -16,6 +16,8 @@ import Account from '../../../assets/images/Account';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 import * as ImagePicker from 'react-native-image-crop-picker';
+import RemotePushController from '../../Services/RemotePushController';
+import { LocalNotification } from '../../Services/LocalPushController';
 
 const Dashboard = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
@@ -123,6 +125,11 @@ const Dashboard = ({ navigation }) => {
         }
     }
 
+    const handleButtonPress = () => {
+        LocalNotification()
+    }
+
+
     // const captureImageTable = () => {
     //     ImagePicker.openCamera({
     //         width: 300,
@@ -142,7 +149,7 @@ const Dashboard = ({ navigation }) => {
             <Header
                 onPress={() => navigation.openDrawer()}
             />
-
+            <RemotePushController />
             <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
                 <Text style={{ fontFamily: FONT.InterMedium, color: COLORS.brand.textColor, fontSize: SIZES.medium, marginTop: 10 }}>Hi, {isUserProfileName}</Text>
                 <Text style={{ fontFamily: FONT.InterBold, color: COLORS.brand.black, fontSize: SIZES.mediumLarge, marginTop: 2, fontWeight: '800' }}>Your Point card</Text>
@@ -226,7 +233,10 @@ const Dashboard = ({ navigation }) => {
                 activeOpacity={0.85}
                 style={styles.scanBtn}
                 onPress={() => { setModalVisible(true); generateQR() }}
+            // onPress={() => { handleButtonPress() }}
+
             >
+                <Text style={{ textAlign: 'center', paddingHorizontal: 20, marginBottom: 10, fontFamily: FONT.InterRegular, fontSize: SIZES.small, lineHeight: 18 }}>Please collect the Cap/ crown of the Coca-Cola bottle for points validation</Text>
                 <View style={styles.btnCircle}>
                     <SvgXml xml={Barcode} height={35} width={35} />
                 </View>

@@ -15,18 +15,18 @@ const Card = ({
 }) => {
     return (
         <View style={styles.cardBox}>
-            <View style={{ width: '40%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
+            <View style={{ width: '40%', minHeight: 112, justifyContent: 'center', padding: 10 }}>
                 <Text style={styles.cardTitle}>Points</Text>
                 <Text
-                    style={styles.CardPoint}
+                    style={[styles.CardPoint, { fontSize: userPoints > 10000 ? SIZES.large : SIZES.extraLarge }]}
                 >
                     {userPoints}
                 </Text>
             </View>
-            <View style={{ width: '40%', minHeight: 112, justifyContent: 'center', padding: 20 }}>
+            <View style={{ width: '40%', minHeight: 112, justifyContent: 'center', padding: 10 }}>
                 <Text style={styles.cardTitle}>Customers</Text>
                 <Text
-                    style={styles.CardPoint}
+                    style={[styles.CardPoint, { fontSize: userPoints > 10000 ? SIZES.large : SIZES.extraLarge }]}
                 >
                     {registerd}
                 </Text>

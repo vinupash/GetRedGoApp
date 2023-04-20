@@ -100,9 +100,9 @@ const LeaderBoard = ({ navigation }) => {
         })
     }
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -113,7 +113,22 @@ const LeaderBoard = ({ navigation }) => {
             <Header
                 onPress={() => navigation.openDrawer()}
             />
-            <Text style={styles.pageTitle}>Leader Board</Text>
+            {/* <Text style={styles.pageTitle}>Leader Board</Text> */}
+            <View style={{
+                width: windowWidth - 30,
+                alignSelf: 'center',
+                marginBottom: 14,
+                marginTop: 20,
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+            }}>
+                <Text style={styles.pageTitle}>Weekly prize winners</Text>
+                {isLoading ? (
+                    <ActivityIndicator
+                        size="small" color={COLORS.brand.primary}
+                        style={{ marginLeft: 8 }} />
+                ) : null}
+            </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
             >
@@ -135,15 +150,15 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.brand.background
     },
     pageTitle: {
-        marginBottom: 14,
+        // marginBottom: 14,
         textAlign: 'left',
-        width: windowWidth - 30,
+        // width: windowWidth - 30,
         alignSelf: 'center',
         fontSize: SIZES.extraLarge,
         fontFamily: FONT.InterBold,
         fontWeight: 700,
         color: COLORS.brand.textColor,
-        marginTop: 20
+        // marginTop: 20
     },
     inputSection: {
         marginTop: 10,

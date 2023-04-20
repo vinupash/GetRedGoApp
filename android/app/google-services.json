@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "902239999513",
+    "project_id": "cocacolaed",
+    "storage_bucket": "cocacolaed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902239999513:android:0e09628d6fbce9118b3c88",
+        "android_client_info": {
+          "package_name": "com.getredgoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902239999513-v5qn5028l9haclkp63bl5k7i0opng9g5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCs_Rm7RZAZngEsEQC23qQFIkXBz6WFMuU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902239999513-v5qn5028l9haclkp63bl5k7i0opng9g5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

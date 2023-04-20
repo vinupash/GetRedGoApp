@@ -128,7 +128,7 @@ const ViewAllOutside = ({ navigation, route }) => {
                     <View style={styles.productDetails}>
                         <View style={{ width: '50%' }}>
                             <Text style={styles.cardTitle}>Status</Text>
-                            <Text style={styles.cardText}>{allTableInfoData.flg_status == 0 ? 'Approved' : 'Not-Approved'}</Text>
+                            <Text style={styles.cardText}>{allTableInfoData.flg_status == 0 ? 'No action' : allTableInfoData.flg_status == 1 ? 'Approved' : 'Rejected'}</Text>
                         </View>
                         <View style={{ width: '50%' }}>
                             <Text style={styles.cardTitle}>Pts</Text>
@@ -151,7 +151,6 @@ const ViewAllOutside = ({ navigation, route }) => {
                         <Text style={{
                             color: COLORS.brand.white,
                             fontFamily: FONT.InterRegular,
-                            color: COLORS.brand.textColor,
                             fontSize: SIZES.small
                         }}>Load More</Text>
                         {isLoading ? (
@@ -212,7 +211,7 @@ const ViewAllOutside = ({ navigation, route }) => {
             var formdata = new FormData();
             formdata.append("waiter_id", isWaiter_id);
             formdata.append("store_id", isStore_id);
-            formdata.append("imagetype", 'outsite');
+            formdata.append("imagetype", 'outside');
             formdata.append("upload_img", isTableImageType, isTableImagePath);
 
             var requestOptions = {
@@ -324,7 +323,7 @@ const ViewAllOutside = ({ navigation, route }) => {
                     marginTop: 20,
                     flexDirection: 'row',
                 }}>
-                    <Text style={styles.pageTitle}>All Outsites</Text>
+                    <Text style={styles.pageTitle}>All Outsides</Text>
                     {isLoading ? (
                         <ActivityIndicator
                             size="small" color={COLORS.brand.primary}
@@ -454,5 +453,16 @@ const styles = StyleSheet.create({
         fontSize: SIZES.font,
         fontFamily: FONT.InterRegular,
         textAlign: 'center'
+    },
+    loadMoreBtn: {
+        padding: 10,
+        backgroundColor: COLORS.brand.primary,
+        borderRadius: 4,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 150,
+        alignSelf: 'center',
+        marginBottom: 10
     },
 })

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, StatusBar, Dimensions, ActivityIndicator, Animated } from 'react-native';
 import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants';
 import { SvgXml } from 'react-native-svg';
@@ -8,17 +8,37 @@ import { Input } from '../../Components/Inputs';
 import { validatePhoneNum } from '../../Constants/methods';
 import { LoginApi } from '../../Constants/ApiCall';
 import LogoWhite from '../../../assets/images/LogoWhite';
+import crashlytics from '@react-native-firebase/crashlytics'
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RemotePushController from '../../Services/RemotePushController';
 
 const Login = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
     const [isMobileNumber, setMobileNumber] = useState('');
-    const [isMobileNumberError, setMobileNumberError] = useState('');
+    const [isDeviceTokan, setDeviceTokan] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [isSuccessMessage, setSuccessMessage] = useState('');
     const [isVisible, setIsVisible] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    // useEffect(() => {
+    //     crashlytics().log('App mounted.')
+    // }, [])
+
+    useEffect(() => {
+        const fetchDataAsync = async () => {
+            setLoading(true)
+            const userDeviceTokan = await AsyncStorage.getItem("userDeviceTokan");
+            setLoading(false)
+            const transformedLoginData = JSON.parse(userDeviceTokan);
+            console.log('transformedLoginData login in', transformedLoginData.deviceTokan);
+            setDeviceTokan(transformedLoginData.deviceTokan)
+        };
+        fetchDataAsync();
+    }, []);
+
+
 
     const handleErrorMsg = () => {
         Animated.timing(
@@ -57,7 +77,7 @@ const Login = ({ navigation }) => {
             return;
         }
         setLoading(true)
-        const response = await LoginApi(isMobileNumber);
+        const response = await LoginApi(isMobileNumber, isDeviceTokan);
         setLoading(false)
         console.log('response--->', response);
         if (response.status === "success") {
@@ -87,6 +107,7 @@ const Login = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.background}
             />
+            <RemotePushController />
             {/* {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} /> : null} */}
             {errorMessage !== '' && (
                 <Animated.View style={[styles.snackbar, {
@@ -126,6 +147,7 @@ const Login = ({ navigation }) => {
                     <PrimaryBtn
                         btnText='Request OTP'
                         onPress={submitData}
+                    // onPress={() => { crashlytics().crash() }}
                     />
                 </View>
             </View>
