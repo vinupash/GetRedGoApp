@@ -236,7 +236,7 @@ const Dashboard = ({ navigation }) => {
             // onPress={() => { handleButtonPress() }}
 
             >
-                <Text style={{ textAlign: 'center', paddingHorizontal: 20, marginBottom: 10, fontFamily: FONT.InterRegular, fontSize: SIZES.small, lineHeight: 18 }}>Please collect the Cap/ crown of the Coca-Cola bottle for points validation</Text>
+                <Text style={{ textAlign: 'center', paddingHorizontal: 20, marginBottom: 10, fontFamily: FONT.InterRegular, fontSize: SIZES.font, lineHeight: 22, color: COLORS.brand.textColor }}>Note: Please collect the Cap/ crown of the Coca-Cola bottle for points validation</Text>
                 <View style={styles.btnCircle}>
                     <SvgXml xml={Barcode} height={35} width={35} />
                 </View>
