@@ -16,6 +16,8 @@ import {
     launchCamera,
     launchImageLibrary
 } from 'react-native-image-picker';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 
 const ViewAllMenuUpload = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
@@ -487,9 +489,22 @@ const ViewAllMenuUpload = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <View style={styles.btnTextGroup}>
                 <Text style={styles.pageTitle}>All Menus</Text>
 
@@ -690,4 +705,15 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 5,
         borderBottomRightRadius: 5,
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

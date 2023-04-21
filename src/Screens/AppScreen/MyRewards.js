@@ -10,6 +10,9 @@ import moment from 'moment';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MyRewardsApi } from '../../Constants/ApiCall';
+import { SvgXml } from 'react-native-svg';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 
 const MyRewards = ({ navigation }) => {
     const currentDate = new Date();
@@ -120,9 +123,22 @@ const MyRewards = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <View style={{
                 width: windowWidth - 30,
                 alignSelf: 'center',
@@ -321,5 +337,16 @@ const styles = StyleSheet.create({
         fontSize: SIZES.base,
         fontFamily: FONT.InterRegular,
         textAlign: 'center'
+    },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
     }
 })

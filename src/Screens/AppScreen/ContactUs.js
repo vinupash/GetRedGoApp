@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, ActivityIndicator, Animated } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, ActivityIndicator, Animated, TouchableOpacity } from 'react-native'
 import { PrimaryBtn } from '../../Components/Buttons';
 import Header from '../../Components/Header'
 import { CustomTextArea, Input } from '../../Components/Inputs';
-import { COLORS, FONT, SIZES } from '../../Constants'
+import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants'
 import { baseUrl } from '../../Constants/Api';
 import { validateEmail, validatePhoneNum } from '../../Constants/methods';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { SavefeedbackApi } from '../../Constants/ApiCall';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+import { SvgXml } from 'react-native-svg';
 
 const ContactUs = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
@@ -134,9 +137,22 @@ const ContactUs = ({ navigation }) => {
                     <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
                 </Animated.View>
             )}
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
             >
@@ -262,4 +278,15 @@ const styles = StyleSheet.create({
         fontFamily: FONT.InterRegular,
         textAlign: 'center'
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

@@ -7,6 +7,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { SvgXml } from 'react-native-svg';
 import CokeIconRed from '../../../assets/images/CokeIconRed';
 import CokeIconWhite from '../../../assets/images/CokeIconWhite';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -25,9 +27,22 @@ const UploadPictures = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <View style={styles.btnTextGroup}>
                 <Text style={styles.pageTitle}>{isPageTitle}</Text>
                 <TouchableOpacity
@@ -344,4 +359,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

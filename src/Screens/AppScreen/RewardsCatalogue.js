@@ -12,6 +12,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SvgXml } from 'react-native-svg';
 import GoldCoine from '../../../assets/images/GoldCoine';
 import GiftCard from '../../../assets/images/GiftCard';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 
 const RewardsCatalogue = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false)
@@ -149,9 +151,22 @@ const RewardsCatalogue = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             {/* <Text style={styles.pageTitle}>Daily prize winners</Text> */}
             <View style={{
                 width: windowWidth - 30,
@@ -182,9 +197,9 @@ const RewardsCatalogue = ({ navigation }) => {
                         resizeMode='contain'>
                         <Image source={assets.bikeImg} style={{ width: 137, height: 108 }} />
                         <Text style={{ paddingVertical: 3, paddingHorizontal: 5, backgroundColor: '#FFFFFF', borderRadius: 2, color: '#AE730F', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, ...SHADOWS.light }}>1 Top Performer will win</Text>
-                        <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', paddingVertical: 8 }}>Jawa Orion Red 45</Text>
+                        <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', paddingVertical: 8, paddingHorizontal: 10, textAlign: 'center' }}>Royal Enfield Bullet 350 ES Regal Red</Text>
 
-                        <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF', marginBottom: 10 }}> Worth Rs.2,37,267</Text>
+                        <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF', marginBottom: 10 }}> Worth Rs.2,20,000</Text>
                     </ImageBackground>
                 </LinearGradient>
                 {/* <View style={styles.cardSection}>
@@ -211,7 +226,7 @@ const RewardsCatalogue = ({ navigation }) => {
                             <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>Monthly Winners get</Text>
                         </View>
                         <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', marginTop: 8 }}>Gold Coin</Text>
-                        <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Value 9999</Text>
+                        <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Value Rs.9,999</Text>
                     </View>
                     <View style={{ width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }}>
                         <SvgXml xml={GoldCoine} width={60} height={68} />
@@ -228,7 +243,7 @@ const RewardsCatalogue = ({ navigation }) => {
                             <Text style={{ color: '#C1450B', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, textAlign: 'center' }}>Weekly Winners get</Text>
                         </View>
                         <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', marginTop: 8 }}>Amazon Pay</Text>
-                        <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Gift voucher Worth Rs.10000</Text>
+                        <Text style={{ fontSize: 12, fontFamily: FONT.InterRegular, fontWeight: '400', color: '#FFFFFF' }}>Gift voucher Worth Rs.2,000</Text>
                     </View>
                     <View style={{ width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }}>
                         <SvgXml xml={GiftCard} width={68} height={48} />
@@ -339,4 +354,15 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         ...SHADOWS.light,
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

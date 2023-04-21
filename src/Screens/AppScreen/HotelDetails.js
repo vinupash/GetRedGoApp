@@ -38,6 +38,7 @@ import { useRoute } from '@react-navigation/native';
 import { ImageUploadBarApi, ImageUploadOutsiteApi, ImageUploadTableApi, UploadAllowedApi } from '../../Constants/ApiCall';
 import moment from 'moment';
 import * as ImagePicker from 'react-native-image-crop-picker';
+import Logo from '../../../assets/images/Logo';
 
 const HotelDetails = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
@@ -137,6 +138,7 @@ const HotelDetails = ({ navigation, route }) => {
     const ImageUploadTableApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
         console.log("isTableImageType ", isTableImageType)
         console.log("isTableImagePath ", isTableImagePath)
+        setLoading(true)
         try {
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
@@ -161,6 +163,7 @@ const HotelDetails = ({ navigation, route }) => {
                     return data.json()
                 }).then((dataJson) => {
                     // fetchDataAsync();
+                    setLoading(false)
                     console.log("dataJson ", dataJson);
                     // handleSuccessMsg()
                     // setSuccessMessage(dataJson.message);
@@ -220,6 +223,7 @@ const HotelDetails = ({ navigation, route }) => {
     const ImageUploadOutSiteApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
         console.log("isTableImageType ", isTableImageType)
         console.log("isTableImagePath ", isTableImagePath)
+        setLoading(true)
         try {
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
@@ -244,6 +248,7 @@ const HotelDetails = ({ navigation, route }) => {
                     return data.json()
                 }).then((dataJson) => {
                     // fetchDataAsync();
+                    setLoading(false)
                     console.log("dataJson ", dataJson);
                     // handleSuccessMsg()
                     // setSuccessMessage(dataJson.message);
@@ -251,9 +256,11 @@ const HotelDetails = ({ navigation, route }) => {
                         fetchDataAsync();
                         handleSuccessMsg()
                         setSuccessMessage(dataJson.message);
+                        // alert(dataJson.message)
                     } else {
                         handleErrorMsg()
                         setErrorMessage(dataJson.message)
+                        // alert(dataJson.message)
                     }
                 })
                 .catch((err) => {
@@ -303,6 +310,7 @@ const HotelDetails = ({ navigation, route }) => {
     const ImageUploadMenuApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
         console.log("isTableImageType ", isTableImageType)
         console.log("isTableImagePath ", isTableImagePath)
+        setLoading(true)
         try {
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
@@ -327,6 +335,7 @@ const HotelDetails = ({ navigation, route }) => {
                     return data.json()
                 }).then((dataJson) => {
                     // fetchDataAsync();
+                    setLoading(false)
                     console.log("dataJson ", dataJson);
                     // handleSuccessMsg()
                     // setSuccessMessage(dataJson.message);
@@ -334,9 +343,11 @@ const HotelDetails = ({ navigation, route }) => {
                         fetchDataAsync();
                         handleSuccessMsg()
                         setSuccessMessage(dataJson.message);
+                        // alert(dataJson.message)
                     } else {
                         handleErrorMsg()
                         setErrorMessage(dataJson.message)
+                        // alert(dataJson.message)
                     }
                 })
                 .catch((err) => {
@@ -386,6 +397,7 @@ const HotelDetails = ({ navigation, route }) => {
     const ImageUploadBarApi = (isWaiter_id, isStore_id, isTableImageType, isTableImagePath) => {
         console.log("isTableImageType ", isTableImageType)
         console.log("isTableImagePath ", isTableImagePath)
+        setLoading(true)
         try {
             var myHeaders = new Headers();
             myHeaders.append("Authorization", "Basic YWRtaW46Q0ByXjBuQCQxMiE=");
@@ -410,6 +422,7 @@ const HotelDetails = ({ navigation, route }) => {
                     return data.json()
                 }).then((dataJson) => {
                     // fetchDataAsync();
+                    setLoading(false)
                     console.log("dataJson ", dataJson);
                     // handleSuccessMsg()
                     // setSuccessMessage(dataJson.message);
@@ -417,9 +430,11 @@ const HotelDetails = ({ navigation, route }) => {
                         fetchDataAsync();
                         handleSuccessMsg()
                         setSuccessMessage(dataJson.message);
+                        // alert(dataJson.message)
                     } else {
                         handleErrorMsg()
                         setErrorMessage(dataJson.message)
+                        // alert(dataJson.message)
                     }
                 })
                 .catch((err) => {
@@ -466,6 +481,9 @@ const HotelDetails = ({ navigation, route }) => {
             });
     };
 
+    if (isLoading) {
+        return <ActivityIndicator size='small' color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -488,9 +506,22 @@ const HotelDetails = ({ navigation, route }) => {
                     <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
                 </Animated.View>
             )}
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <View style={{
                 flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 8, width: windowWidth - 30,
                 alignSelf: 'center',
@@ -911,4 +942,15 @@ const styles = StyleSheet.create({
         fontFamily: FONT.InterRegular,
         textAlign: 'center'
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

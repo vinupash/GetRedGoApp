@@ -7,6 +7,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { baseUrl } from '../../Constants/Api';
 import moment from 'moment';
 import { CustomerListingApi } from '../../Constants/ApiCall';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
+import { SvgXml } from 'react-native-svg';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -121,22 +124,41 @@ const MyCustomers = ({ navigation }) => {
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
 
-                <Header
+                {/* <Header
                     onPress={() => navigation.openDrawer()}
-                />
+                /> */}
+                <View style={styles.headerBar}>
+                    <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                        <SvgXml xml={Menu} width={28} height={28} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() => navigation.navigate('Dashboard')}
+                    >
+                        <SvgXml xml={Logo} width={75} height={24} />
+                    </TouchableOpacity>
+                    <View style={{ height: 40, width: 40 }}>
+                    </View>
+                </View>
                 <View style={{
                     width: windowWidth - 30,
                     alignSelf: 'center',
                     marginBottom: 14,
                     marginTop: 10,
-                    justifyContent: 'space-between',
+                    // justifyContent: 'space-between',
                     flexDirection: 'row',
                 }}>
-                    {/* <Text style={styles.pageTitle}>My Customers</Text> */}
+                    <Text style={styles.pageTitle}>My Customers</Text>
                     {loading ? (
                         <ActivityIndicator
                             size="small" color={COLORS.brand.primary}
-                            style={{ marginLeft: 8, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', flex: 1 }} />
+                            style={{
+                                marginLeft: 8,
+                                // justifyContent: 'center', 
+                                // alignItems: 'center', 
+                                // alignSelf: 'center', 
+                                // flex: 1
+                            }} />
                     ) : null}
                 </View>
 
@@ -266,7 +288,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10
     },
-
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })
 
 

@@ -14,6 +14,9 @@ import {
 } from 'react-native-image-picker';
 import { UploadAllowedApi } from '../../Constants/ApiCall';
 import * as ImagePicker from 'react-native-image-crop-picker';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
+import { SvgXml } from 'react-native-svg';
 
 const ViewAllBar = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
@@ -315,17 +318,32 @@ const ViewAllBar = ({ navigation, route }) => {
                     <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
                 </Animated.View>
             )}
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
-            <View style={styles.btnTextGroup}>
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
+            <View style={[styles.btnTextGroup, {
+                marginBottom: isUploadAllowedTable == 0 ? 0 : 14
+            }]}>
                 {/* <Text style={styles.pageTitle}>All Bars</Text> */}
 
                 <View style={{
                     // width: windowWidth - 30,
                     alignSelf: 'center',
                     marginBottom: 14,
-                    marginTop: 20,
+                    // marginTop: 20,
                     flexDirection: 'row',
                 }}>
                     <Text style={styles.pageTitle}>All Bars</Text>
@@ -387,9 +405,9 @@ const styles = StyleSheet.create({
         color: COLORS.brand.textColor,
     },
     btnTextGroup: {
-        marginTop: 20,
+        marginTop: 10,
         width: windowWidth - 30,
-        marginBottom: 14,
+        // marginBottom: 14,
         alignSelf: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -471,4 +489,15 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 10
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

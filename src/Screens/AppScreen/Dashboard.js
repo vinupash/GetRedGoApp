@@ -18,6 +18,8 @@ const windowHeight = Dimensions.get('window').height;
 import * as ImagePicker from 'react-native-image-crop-picker';
 import RemotePushController from '../../Services/RemotePushController';
 import { LocalNotification } from '../../Services/LocalPushController';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 
 const Dashboard = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false);
@@ -135,9 +137,17 @@ const Dashboard = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <SvgXml xml={Logo} width={75} height={24} />
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <RemotePushController />
             <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
                 <Text style={{ fontFamily: FONT.InterMedium, color: COLORS.brand.textColor, fontSize: SIZES.medium, marginTop: 10 }}>Hi, {isUserProfileName}</Text>
@@ -344,5 +354,16 @@ const styles = StyleSheet.create({
         color: COLORS.brand.textColor,
         fontSize: SIZES.medium,
         marginBottom: 10
+    },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
     }
 })

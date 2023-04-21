@@ -14,6 +14,9 @@ import {
 } from 'react-native-image-picker';
 import { ImageListingApi, ImageListingTableData, UploadAllowedApi } from '../../Constants/ApiCall';
 import * as ImagePicker from 'react-native-image-crop-picker';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
+import { SvgXml } from 'react-native-svg';
 
 const ViewAllTable = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(false);
@@ -296,9 +299,22 @@ const ViewAllTable = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             {errorMessage !== '' && (
                 <Animated.View style={[styles.snackbar, {
                     opacity: fadeAnim
@@ -314,14 +330,16 @@ const ViewAllTable = ({ navigation, route }) => {
                     <Text style={[styles.snackbarText, { color: '#FFFFFF' }]}>{isSuccessMessage}</Text>
                 </Animated.View>
             )}
-            <View style={styles.btnTextGroup}>
+            <View style={[styles.btnTextGroup, {
+                marginBottom: isUploadAllowedTable == 0 ? 0 : 14
+            }]}>
                 {/* <Text style={styles.pageTitle}>All Tables</Text> */}
 
                 <View style={{
                     // width: windowWidth - 30,
                     alignSelf: 'center',
                     marginBottom: 14,
-                    marginTop: 20,
+                    // marginTop: 20,
                     flexDirection: 'row',
                 }}>
                     <Text style={styles.pageTitle}>All Tables</Text>
@@ -382,9 +400,9 @@ const styles = StyleSheet.create({
         color: COLORS.brand.textColor,
     },
     btnTextGroup: {
-        marginTop: 20,
+        marginTop: 10,
         width: windowWidth - 30,
-        marginBottom: 14,
+        // marginBottom: 14,
         alignSelf: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -472,4 +490,15 @@ const styles = StyleSheet.create({
         fontFamily: FONT.InterRegular,
         textAlign: 'center'
     },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
+    }
 })

@@ -6,6 +6,9 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 import { WebView } from 'react-native-webview';
 import { baseUrl } from '../../Constants/Api';
+import { SvgXml } from 'react-native-svg';
+import Menu from '../../../assets/images/Menu';
+import Logo from '../../../assets/images/Logo';
 
 const AboutApp = ({ navigation }) => {
     return (
@@ -14,9 +17,22 @@ const AboutApp = ({ navigation }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
-            <Header
+            {/* <Header
                 onPress={() => navigation.openDrawer()}
-            />
+            /> */}
+            <View style={styles.headerBar}>
+                <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
+                    <SvgXml xml={Menu} width={28} height={28} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => navigation.navigate('Dashboard')}
+                >
+                    <SvgXml xml={Logo} width={75} height={24} />
+                </TouchableOpacity>
+                <View style={{ height: 40, width: 40 }}>
+                </View>
+            </View>
             <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/about' }} style={{ flex: 1, paddingTop: 50 }} />
             {/* <Text style={styles.pageTitle}>About App</Text> */}
 
@@ -124,6 +140,16 @@ const styles = StyleSheet.create({
         borderRadius: 6 / 2,
         backgroundColor: COLORS.brand.black,
         marginTop: 6
+    },
+    headerBar: {
+        height: 56,
+        width: windowWidth,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
+        ...SHADOWS.medium,
+        marginBottom: 5,
+        flexDirection: 'row'
     }
-
 })
