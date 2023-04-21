@@ -36,7 +36,7 @@ const Dashboard = ({ navigation }) => {
 
     useEffect(() => {
         fetchDataAsync();
-    }, []);
+    }, [isFocused]);
 
     const fetchDataAsync = async () => {
         setLoading(true)
@@ -46,10 +46,11 @@ const Dashboard = ({ navigation }) => {
             return;
         }
         const transformedLoginData = JSON.parse(userLognDetails);
-        // console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
+        console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
         const waiterId = transformedLoginData.waiter_id;
         const responseUserData = await UserDataApi(waiterId);
         setLoading(false)
+        console.log('responseUserData ---->', responseUserData);
         setWaiter_id(transformedLoginData.waiter_id)
         setStore_id(transformedLoginData.store_id)
         if (responseUserData.status === true) {
@@ -131,6 +132,10 @@ const Dashboard = ({ navigation }) => {
     //     LocalNotification()
     // }
 
+    if (isLoading) {
+        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar
@@ -153,8 +158,8 @@ const Dashboard = ({ navigation }) => {
                 <Text style={{ fontFamily: FONT.InterMedium, color: COLORS.brand.textColor, fontSize: SIZES.medium, marginTop: 10 }}>Hi, {isUserProfileName}</Text>
                 <Text style={{ fontFamily: FONT.InterBold, color: COLORS.brand.black, fontSize: SIZES.mediumLarge, marginTop: 2, fontWeight: '800' }}>Your Point card</Text>
             </View>
-            <>
-                {isLoading1 ? (
+            {/* <>
+                {isLoading ? (
                     <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} />
                 ) : (
                     <Card
@@ -162,7 +167,11 @@ const Dashboard = ({ navigation }) => {
                         registerd={!isRegistered ? '0' : isRegistered}
                     />
                 )}
-            </>
+            </> */}
+            <Card
+                userPoints={isUserPoints}
+                registerd={!isRegistered ? '0' : isRegistered}
+            />
 
             <View style={styles.menuSection}>
                 <Text style={styles.sectionTitle}>Others</Text>

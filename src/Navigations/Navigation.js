@@ -17,15 +17,16 @@ const theme = {
 const Navigation = () => {
   // const [isLoading, setLoading] = useState(false)
   const { isLoading, isUserLoginStatus } = useContext(AuthContext);
-  console.log('isUserLoginStatus--->', isUserLoginStatus);
-  // if (isLoading) {
-  //   return <ActivityIndicator size='small' color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
-  // }
+  // console.log('isUserLoginStatus--->', isUserLoginStatus);
+  if (isLoading) {
+    return <ActivityIndicator size='small' color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+  }
   return (
     <NavigationContainer theme={theme} independent={true}>
       {
         !isUserLoginStatus ? <AuthNavigations /> : <AppNavigations />
       }
+      {/* <AuthNavigations /> */}
     </NavigationContainer>
   )
 }

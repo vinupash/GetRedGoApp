@@ -34,7 +34,7 @@ const CustomDrawer = (props) => {
             setUserProfileName(responseUserData.result.fldv_name)
         };
         fetchUserDataAsync()
-    }, [isFocused])
+    }, [])
 
 
     const handleItemPress = (title) => {

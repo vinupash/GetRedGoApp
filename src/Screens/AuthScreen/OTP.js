@@ -17,14 +17,14 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import { ReSendOtpApi, ValidateOtpApi } from '../../Constants/ApiCall';
 
 const OTP = ({ navigation, route }) => {
-    const { GetUserAsyncLoginData } = useContext(AuthContext);
+    const { ValidateOtpApi } = useContext(AuthContext);
     const isFocused = useIsFocused()
     const { user } = route.params;
+    console.log('user--->', user);
     useEffect(() => {
         setMobileNumber(user.mobileNumber)
         setWaiter_id(user.waiter_id)
         setStore_id(user.store_id)
-        GetUserAsyncLoginData()
     }, [isFocused])
 
     const [isLoading, setLoading] = useState(false);
@@ -116,34 +116,32 @@ const OTP = ({ navigation, route }) => {
             return
         }
         setLoading(true)
-        const response = await ValidateOtpApi(isMobileOTP, isWaiter_id, isMobileNumber);
+        const response = await ValidateOtpApi(isMobileOTP, isWaiter_id, isMobileNumber, isStore_id);
         setLoading(false)
-        console.log('response--->', response);
+        console.log('response OTP screen--->', response);
         if (response.status === "success") {
-            GetUserAsyncLoginData();
-            // alert(response.message)
             handleSuccessMsg()
             setSuccessMessage(response.message)
-            AsyncStorage.setItem(
-                "userData",
-                JSON.stringify({
-                    loginStatusUser: 1,
-                    userMobileNumber: isMobileNumber,
-                    waiter_id: isWaiter_id,
-                    loginStatus: response.result,
-                    store_id: isStore_id,
-                })
-            );
-            GetUserAsyncLoginData();
+            alert(response.message)
+            // AsyncStorage.setItem(
+            //     "userData",
+            //     JSON.stringify({
+            //         loginStatusUser: 1,
+            //         userMobileNumber: isMobileNumber,
+            //         waiter_id: isWaiter_id,
+            //         loginStatus: response.result,
+            //         store_id: isStore_id,
+            //     })
+            // );
         } else {
             handleErrorMsg()
             setErrorMessage(json.message)
         }
     };
 
-    // if (isLoading) {
-    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    // }
+    if (isLoading) {
+        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    }
 
     return (
         <View style={styles.container}>
