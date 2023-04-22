@@ -140,9 +140,9 @@ const OTP = ({ navigation, route }) => {
         }
     };
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
 
     return (
         <View style={styles.container}>
@@ -151,6 +151,11 @@ const OTP = ({ navigation, route }) => {
                 backgroundColor={COLORS.brand.background}
             />
             {/* {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ justifyContent: 'center', alignItems: 'center' }} /> : null} */}
+            {/* {isLoading ?
+                <View style={styles.loading}>
+                    <ActivityIndicator size='small' color={COLORS.brand.primary} />
+                </View>
+                : null} */}
             {errorMessage !== '' && (
                 <Animated.View style={[styles.snackbar, {
                     opacity: fadeAnim
@@ -365,5 +370,15 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.brand.white,
         borderColor: '#E0E0E0',
     },
-
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    }
 })

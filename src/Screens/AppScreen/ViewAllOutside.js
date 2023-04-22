@@ -84,7 +84,7 @@ const ViewAllOutside = ({ navigation, route }) => {
 
             var formdata = new FormData();
             formdata.append("store_id", transformedLoginData.store_id);
-            formdata.append("imagetype", 'outsite');
+            formdata.append("imagetype", 'outside');
             formdata.append("page_no", offset);
 
             var requestOptions = {

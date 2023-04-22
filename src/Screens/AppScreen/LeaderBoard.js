@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, TouchableOpacity, ImageBackground, ActivityIndicator, FlatList } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, Dimensions, ScrollView, TouchableOpacity, ImageBackground, ActivityIndicator, FlatList, Animated } from 'react-native'
 import Header from '../../Components/Header'
 import { COLORS, FONT, SHADOWS, SIZES } from '../../Constants'
 import { baseUrl } from '../../Constants/Api';
@@ -15,6 +15,24 @@ import { SvgXml } from 'react-native-svg';
 const LeaderBoard = ({ navigation }) => {
     const [isLoading, setLoading] = useState(false)
     const [isPrizeWinners, setPrizeWinners] = useState([])
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isSuccessMessage, setSuccessMessage] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const handleErrorMsg = () => {
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: isVisible ? 0 : 1,
+                duration: 500,
+                useNativeDriver: true
+            }
+        ).start();
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 3000);
+    };
 
     const isFocused = useIsFocused()
 
@@ -55,7 +73,9 @@ const LeaderBoard = ({ navigation }) => {
             if (json.status === "success") {
                 setPrizeWinners(json.leader_board)
             } else {
-                alert(json.message)
+                handleErrorMsg()
+                setErrorMessage(json.message)
+                // alert(json.message)
             }
         } catch (error) {
             console.log(error.message);
@@ -116,6 +136,13 @@ const LeaderBoard = ({ navigation }) => {
             {/* <Header
                 onPress={() => navigation.openDrawer()}
             /> */}
+            {errorMessage !== '' && (
+                <Animated.View style={[styles.snackbar, {
+                    opacity: fadeAnim
+                }]}>
+                    <Text style={styles.snackbarText}>{errorMessage}</Text>
+                </Animated.View>
+            )}
             <View style={styles.headerBar}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
                     <SvgXml xml={Menu} width={28} height={28} />
@@ -249,5 +276,23 @@ const styles = StyleSheet.create({
         ...SHADOWS.medium,
         marginBottom: 5,
         flexDirection: 'row'
-    }
+    },
+    snackbar: {
+        backgroundColor: '#C62828',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        left: 0,
+        zIndex: 1,
+        // height: 45,
+        paddingHorizontal: 5,
+        paddingVertical: 10,
+        justifyContent: 'center'
+    },
+    snackbarText: {
+        color: '#FFFFFF',
+        fontSize: SIZES.font,
+        fontFamily: FONT.InterRegular,
+        textAlign: 'center'
+    },
 })

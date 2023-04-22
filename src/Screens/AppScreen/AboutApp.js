@@ -33,7 +33,8 @@ const AboutApp = ({ navigation }) => {
                 <View style={{ height: 40, width: 40 }}>
                 </View>
             </View>
-            <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/about' }} style={{ flex: 1, paddingTop: 50 }} />
+            {/* <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/about' }} style={{ flex: 1, paddingTop: 50 }} /> */}
+            <WebView source={{ uri: 'https://www.theofferclub.com/cocacolaspinandwin/register/about' }} style={{ flex: 1, paddingTop: 50 }} />
             {/* <Text style={styles.pageTitle}>About App</Text> */}
 
             {/* <ScrollView

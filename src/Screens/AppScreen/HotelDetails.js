@@ -481,9 +481,9 @@ const HotelDetails = ({ navigation, route }) => {
             });
     };
 
-    if (isLoading) {
-        return <ActivityIndicator size='small' color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size='small' color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(52, 52, 52, 0.8)' }} />
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -491,6 +491,11 @@ const HotelDetails = ({ navigation, route }) => {
                 barStyle='dark-content'
                 backgroundColor={COLORS.brand.white}
             />
+            {isLoading ?
+                <View style={styles.loading}>
+                    <ActivityIndicator size='small' color={COLORS.brand.primary} />
+                </View>
+                : null}
             {errorMessage !== '' && (
                 <Animated.View style={[styles.snackbar, {
                     opacity: fadeAnim
@@ -509,6 +514,7 @@ const HotelDetails = ({ navigation, route }) => {
             {/* <Header
                 onPress={() => navigation.openDrawer()}
             /> */}
+
             <View style={styles.headerBar}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()} style={{ height: 40, width: 40, justifyContent: 'center' }}>
                     <SvgXml xml={Menu} width={28} height={28} />
@@ -527,7 +533,7 @@ const HotelDetails = ({ navigation, route }) => {
                 alignSelf: 'center',
             }}>
                 <Text style={styles.pageTitle}>{isStoreName}</Text>
-                {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ marginLeft: 5 }} /> : null}
+                {/* {isLoading ? <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ marginLeft: 5 }} /> : null} */}
             </View>
             <View style={styles.pointsUserBox}>
                 <View style={styles.pointBox}>
@@ -952,5 +958,16 @@ const styles = StyleSheet.create({
         ...SHADOWS.medium,
         marginBottom: 5,
         flexDirection: 'row'
+    },
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
     }
 })

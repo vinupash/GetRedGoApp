@@ -34,7 +34,7 @@ const MyRewards = ({ navigation }) => {
             const waiterId = transformedLoginData.waiter_id;
             const responseUserData = await MyRewardsApi(waiterId);
             setLoading(false)
-            console.log('responseUserData MyRewardsApi--->', responseUserData.status);
+            console.log('responseUserData MyRewardsApi--->', responseUserData);
             setMyRewardsList(responseUserData.status);
             setisMyRewardsMsg(responseUserData.message);
             if (responseUserData.status === "success") {
@@ -113,9 +113,21 @@ const MyRewards = ({ navigation }) => {
     }
 
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <View style={{
+    //         position: 'absolute',
+    //         left: 0,
+    //         right: 0,
+    //         top: 0,
+    //         bottom: 0,
+    //         alignItems: 'center',
+    //         justifyContent: 'center',
+    //         zIndex: 1,
+    //         backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    //     }}>
+    //         <ActivityIndicator size='small' color={COLORS.brand.primary} />
+    //     </View>;
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -139,6 +151,11 @@ const MyRewards = ({ navigation }) => {
                 <View style={{ height: 40, width: 40 }}>
                 </View>
             </View>
+            {isLoading ?
+                <View style={styles.loading}>
+                    <ActivityIndicator size='small' color={COLORS.brand.primary} />
+                </View>
+                : null}
             <View style={{
                 width: windowWidth - 30,
                 alignSelf: 'center',
@@ -148,11 +165,11 @@ const MyRewards = ({ navigation }) => {
                 flexDirection: 'row',
             }}>
                 <Text style={styles.pageTitle}>My Rewards</Text>
-                {isLoading ? (
+                {/* {isLoading ? (
                     <ActivityIndicator
                         size="small" color={COLORS.brand.primary}
                         style={{ marginLeft: 8 }} />
-                ) : null}
+                ) : null} */}
             </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -165,9 +182,7 @@ const MyRewards = ({ navigation }) => {
                             {renderFooter()}
                         </> : <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>No record found</Text>} */}
 
-                    {isMyRewardsList == false ? <Text style={{ textAlign: 'center', fontFamily: FONT.InterBold, fontSize: SIZES.medium, color: COLORS.brand.primary, paddingVertical: 10 }}>{isMyRewardsMsg}</Text> : <>{MyRewardsListData()}</>}
-
-
+                    {isMyRewardsList == false ? <Text style={{ width: windowWidth - 30, alignSelf: 'center', fontFamily: FONT.InterMedium, fontSize: SIZES.small, color: COLORS.brand.error }}>{isMyRewardsMsg}</Text> : <>{MyRewardsListData()}</>}
 
                     {/* <View style={styles.cardSection}>
                         <View style={{
@@ -253,7 +268,7 @@ export default MyRewards
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.brand.background
+        backgroundColor: COLORS.brand.background,
     },
     pageTitle: {
         textAlign: 'left',
@@ -348,5 +363,16 @@ const styles = StyleSheet.create({
         ...SHADOWS.medium,
         marginBottom: 5,
         flexDirection: 'row'
+    },
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
     }
 })

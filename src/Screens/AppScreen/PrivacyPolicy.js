@@ -32,7 +32,9 @@ const PrivacyPolicy = ({ navigation }) => {
                 </View>
             </View>
             {/* <Text style={styles.pageTitle}>Privacy Policy</Text> */}
-            <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/tnc' }} style={{ flex: 1 }} />
+            {/* <WebView source={{ uri: 'https://demo.crayoninfotech.com/cocacola/register/tnc' }} style={{ flex: 1 }} /> */}
+            <WebView source={{ uri: 'https://www.theofferclub.com/cocacolaspinandwin/register/tnc' }} style={{ flex: 1 }} />
+
             {/* <ScrollView
                 showsVerticalScrollIndicator={false}
             >

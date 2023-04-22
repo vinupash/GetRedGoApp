@@ -1,4 +1,5 @@
-const BASE_URL = 'https://demo.crayoninfotech.com/cocacola/api/';
+const BASE_URL_V1 = 'https://demo.crayoninfotech.com/cocacola/api/';
+const BASE_URL = 'https://www.theofferclub.com/cocacolaspinandwin/api/';
 
 export const LoginApi = async (isMobileNumber, isDeviceTokan) => {
     try {
@@ -88,7 +89,7 @@ export const UserDataApi = async (waiterId) => {
             redirect: 'follow'
         };
 
-        const response = await fetch("https://demo.crayoninfotech.com/cocacola/api/user/getuserInfo", requestOptions);
+        const response = await fetch(BASE_URL + "user/getuserInfo", requestOptions);
         const json = await response.json();
         return json;
     } catch (error) {

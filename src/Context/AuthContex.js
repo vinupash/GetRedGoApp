@@ -6,7 +6,8 @@ export const AuthContext = createContext()
 export const AuthProvider = ({ children }) => {
     const [isLoading, setLoading] = useState(false);
     const [isUserLoginStatus, setUserLoginStatus] = useState(false)
-    const BASE_URL = 'https://demo.crayoninfotech.com/cocacola/api/';
+    const BASE_URL_V1 = 'https://demo.crayoninfotech.com/cocacola/api/';
+    const BASE_URL = 'https://www.theofferclub.com/cocacolaspinandwin/api/';
     // const GetUserAsyncLoginData = async () => {
     //     setLoading(true)
     //     const userLognDetails = await AsyncStorage.getItem("userData");
@@ -88,13 +89,17 @@ export const AuthProvider = ({ children }) => {
 
     const isUserLogged = async () => {
         try {
-            setLoading(true)
+            // setLoading(true)
             let UserLoginStatus = await AsyncStorage.getItem('UserLoginStatus')
             // console.log('UserLoginStatus cool--->', UserLoginStatus);
+            if (!UserLoginStatus) {
+                // Alert.alert("Unable to fetch mobile number, Login again");
+                return;
+            }
             const transformedLoginData = JSON.parse(UserLoginStatus);
+            // setLoading(false)
             console.log('transformedLoginData AuthContext--->', transformedLoginData);
             setUserLoginStatus(transformedLoginData.UserLoginStatus)
-            setLoading(false)
         } catch (error) {
             console.log(`isUserLogged in ${error}`);
         }

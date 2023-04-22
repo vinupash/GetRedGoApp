@@ -29,6 +29,7 @@ const Dashboard = ({ navigation }) => {
     const [isStore_id, setStore_id] = useState('');
     const [isQR_Code, setQR_Code] = useState('');
     const [isUserPoints, setUserPoints] = useState('');
+    const [isStorePoints, setStorePoints] = useState('');
     const [isUnregisterd, setUnregisterd] = useState('');
     const [isRegistered, setRegistered] = useState('');
     const [isUserProfileName, setUserProfileName] = useState('');
@@ -56,6 +57,7 @@ const Dashboard = ({ navigation }) => {
         if (responseUserData.status === true) {
             setUserProfileName(responseUserData.result.fldv_name)
             setUserPoints(responseUserData.result.fldf_points)
+            setStorePoints(responseUserData.result.fldf_store_points)
             setRegistered(responseUserData.registered)
             setUnregisterd(responseUserData.unregisterd)
             AsyncStorage.setItem(
@@ -98,7 +100,7 @@ const Dashboard = ({ navigation }) => {
                     onPress={() => {
                         navigation.navigate(NavigationInfoData.screenName, {
                             userPoints: {
-                                user_points: isUserPoints
+                                user_points: isStorePoints
                             }
                         })
                     }}
@@ -132,9 +134,9 @@ const Dashboard = ({ navigation }) => {
     //     LocalNotification()
     // }
 
-    if (isLoading) {
-        return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator size="small" color={COLORS.brand.primary} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />;
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -153,6 +155,11 @@ const Dashboard = ({ navigation }) => {
                 <View style={{ height: 40, width: 40 }}>
                 </View>
             </View>
+            {isLoading ?
+                <View style={styles.loading}>
+                    <ActivityIndicator size='small' color={COLORS.brand.primary} />
+                </View>
+                : null}
             <RemotePushController />
             <View style={{ width: windowWidth - 30, alignSelf: 'center' }}>
                 <Text style={{ fontFamily: FONT.InterMedium, color: COLORS.brand.textColor, fontSize: SIZES.medium, marginTop: 10 }}>Hi, {isUserProfileName}</Text>
@@ -374,5 +381,16 @@ const styles = StyleSheet.create({
         ...SHADOWS.medium,
         marginBottom: 5,
         flexDirection: 'row'
+    },
+    loading: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
     }
 })

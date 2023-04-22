@@ -90,7 +90,7 @@ const MyCustomers = ({ navigation }) => {
                     </View>
 
                     <View style={[styles.cardPointBox, { backgroundColor: CustomersInfoData.fldf_points > 4 || CustomersInfoData.fldf_points === null ? COLORS.brand.success : COLORS.brand.error, }]}>
-                        <Text style={[styles.cardUserPoints, { fontSize: CustomersInfoData.fldf_points && CustomersInfoData.fldf_points >= 1 ? SIZES.mediumLarge : SIZES.font, }]}>{CustomersInfoData.fldf_points && CustomersInfoData.fldf_points >= 1 ? CustomersInfoData.fldf_points : 'N/A'}</Text>
+                        <Text style={[styles.cardUserPoints, { fontSize: CustomersInfoData.fldf_points && CustomersInfoData.fldf_points >= 1 ? SIZES.font : SIZES.font, }]}>{CustomersInfoData.fldf_points && CustomersInfoData.fldf_points >= 1 ? CustomersInfoData.fldf_points : 'N/A'}</Text>
                         <Text style={styles.cardPointText}>pts</Text>
                     </View>
                 </View>
