@@ -100,12 +100,12 @@ const WeeklyPrizeWinners = ({ navigation }) => {
                             <View style={{ width: '48%', height: 45 }}>
                                 <ImageBackground
                                     // source={assets.Tag}
-                                    source={(CustomersDetail.fldi_offer == 1) ? assets.ZomatoTag : (CustomersDetail.fldi_offer == 2) ? assets.AmazonTag :
+                                    source={(CustomersDetail.fldi_offer == 7) ? assets.ZomatoTag : (CustomersDetail.fldi_offer == 8) ? assets.AmazonTag :
                                         assets.GoldTag}
                                     style={{ width: '100%', height: 45, justifyContent: 'center' }}
                                     resizeMode='contain'>
                                     <Text style={{ marginLeft: '20%', fontFamily: FONT.InterBold, fontWeight: '800', fontSize: SIZES.medium, color: COLORS.brand.white }}>
-                                        {(CustomersDetail.fldi_offer == 1) ? 'Zomato' : (CustomersDetail.fldi_offer == 2) ? 'Amazon' :
+                                        {(CustomersDetail.fldi_offer == 7) ? 'Zomato' : (CustomersDetail.fldi_offer == 8) ? 'Amazon' :
                                             'Gold'}
                                     </Text>
                                 </ImageBackground>
@@ -114,10 +114,10 @@ const WeeklyPrizeWinners = ({ navigation }) => {
                                 null
                                 :
                                 <View style={[styles.rewardsTextBox, {
-                                    backgroundColor: CustomersDetail.fldi_offer == 1 ? '#FFEDEE' : CustomersDetail.fldi_offer == 2 ? '#FFF3E1' : '#F7CC84'
+                                    backgroundColor: CustomersDetail.fldi_offer == 7 ? '#FFEDEE' : CustomersDetail.fldi_offer == 8 ? '#FFF3E1' : '#F7CC84'
                                 }]}>
                                     <Text style={[styles.rewardsTex, {
-                                        color: CustomersDetail.fldi_offer == 1 ? '#CB202D' : CustomersDetail.fldi_offer == 2 ? '#FF9900' : '#956109'
+                                        color: CustomersDetail.fldi_offer == 7 ? '#CB202D' : CustomersDetail.fldi_offer == 8 ? '#FF9900' : '#956109'
                                     }]}>{CustomersDetail.fldv_code}</Text>
                                 </View>
                             }

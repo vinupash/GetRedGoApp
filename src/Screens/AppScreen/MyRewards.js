@@ -20,31 +20,33 @@ const MyRewards = ({ navigation }) => {
     const [isMyRewardsList, setMyRewardsList] = useState('')
     const [isMyRewardsListData, setMyRewardsListData] = useState([])
     const [isMyRewardsMsg, setisMyRewardsMsg] = useState('')
+    const isFocusedData = useIsFocused()
 
     useEffect(() => {
-        const fetchDataAsync = async () => {
-            setLoading(true)
-            const userLognDetails = await AsyncStorage.getItem("userData");
-            if (!userLognDetails) {
-                // Alert.alert("Unable to fetch mobile number, Login again");
-                return;
-            }
-            const transformedLoginData = JSON.parse(userLognDetails);
-            console.log('transformedLoginData Navigation--->', transformedLoginData.waiter_id);
-            const waiterId = transformedLoginData.waiter_id;
-            const responseUserData = await MyRewardsApi(waiterId);
-            setLoading(false)
-            console.log('responseUserData MyRewardsApi--->', responseUserData);
-            setMyRewardsList(responseUserData.status);
-            setisMyRewardsMsg(responseUserData.message);
-            if (responseUserData.status === "success") {
-                setMyRewardsListData(responseUserData.daily_winners)
-            } else {
-                console.log(responseUserData.message);
-            }
-        };
         fetchDataAsync();
-    }, []);
+    }, [isFocusedData]);
+
+    const fetchDataAsync = async () => {
+        setLoading(true)
+        const userLognDetails = await AsyncStorage.getItem("userData");
+        if (!userLognDetails) {
+            // Alert.alert("Unable to fetch mobile number, Login again");
+            return;
+        }
+        const transformedLoginData = JSON.parse(userLognDetails);
+        console.log('transformedLoginData--->', transformedLoginData.waiter_id);
+        const waiterId = transformedLoginData.waiter_id;
+        const responseUserData = await MyRewardsApi(waiterId);
+        setLoading(false)
+        console.log('responseUserData MyRewardsApi--->', responseUserData);
+        setMyRewardsList(responseUserData.status);
+        setisMyRewardsMsg(responseUserData.message);
+        if (responseUserData.status === "success") {
+            setMyRewardsListData(responseUserData.daily_winners)
+        } else {
+            console.log(responseUserData.message);
+        }
+    };
 
     const MyRewardsListData = () => {
         return isMyRewardsListData.map((MyRewardsDetail, index) => {
@@ -75,12 +77,12 @@ const MyRewards = ({ navigation }) => {
                                     assets.Bronze} */}
                                 <ImageBackground
                                     // source={assets.Tag}
-                                    source={(MyRewardsDetail.fldi_offer == 1) ? assets.ZomatoTag : (MyRewardsDetail.fldi_offer == 2) ? assets.AmazonTag :
+                                    source={(MyRewardsDetail.fldi_offer == 7) ? assets.ZomatoTag : (MyRewardsDetail.fldi_offer == 8) ? assets.AmazonTag :
                                         assets.GoldTag}
                                     style={{ width: '100%', height: 45, justifyContent: 'center' }}
                                     resizeMode='contain'>
                                     <Text style={{ marginLeft: '20%', fontFamily: FONT.InterBold, fontWeight: '800', fontSize: SIZES.medium, color: COLORS.brand.white }}>
-                                        {(MyRewardsDetail.fldi_offer == 1) ? 'Zomato' : (MyRewardsDetail.fldi_offer == 2) ? 'Amazon' :
+                                        {(MyRewardsDetail.fldi_offer == 7) ? 'Zomato' : (MyRewardsDetail.fldi_offer == 8) ? 'Amazon' :
                                             'Gold'}
                                     </Text>
                                 </ImageBackground>
@@ -89,10 +91,10 @@ const MyRewards = ({ navigation }) => {
                                 null
                                 :
                                 <View style={[styles.rewardsTextBox, {
-                                    backgroundColor: MyRewardsDetail.fldi_offer == 1 ? '#FFEDEE' : MyRewardsDetail.fldi_offer == 2 ? '#FFF3E1' : '#F7CC84'
+                                    backgroundColor: MyRewardsDetail.fldi_offer == 7 ? '#FFEDEE' : MyRewardsDetail.fldi_offer == 8 ? '#FFF3E1' : '#F7CC84'
                                 }]}>
                                     <Text style={[styles.rewardsTex, {
-                                        color: MyRewardsDetail.fldi_offer == 1 ? '#CB202D' : MyRewardsDetail.fldi_offer == 2 ? '#FF9900' : '#956109'
+                                        color: MyRewardsDetail.fldi_offer == 7 ? '#CB202D' : MyRewardsDetail.fldi_offer == 8 ? '#FF9900' : '#956109'
                                     }]}>{MyRewardsDetail.fldv_code}</Text>
                                 </View>
                             }
@@ -151,25 +153,25 @@ const MyRewards = ({ navigation }) => {
                 <View style={{ height: 40, width: 40 }}>
                 </View>
             </View>
-            {isLoading ?
+            {/* {isLoading ?
                 <View style={styles.loading}>
                     <ActivityIndicator size='small' color={COLORS.brand.primary} />
                 </View>
-                : null}
+                : null} */}
             <View style={{
                 width: windowWidth - 30,
                 alignSelf: 'center',
                 marginBottom: 14,
                 marginTop: 20,
-                justifyContent: 'space-between',
+                // justifyContent: 'space-between',
                 flexDirection: 'row',
             }}>
                 <Text style={styles.pageTitle}>My Rewards</Text>
-                {/* {isLoading ? (
+                {isLoading ? (
                     <ActivityIndicator
                         size="small" color={COLORS.brand.primary}
                         style={{ marginLeft: 8 }} />
-                ) : null} */}
+                ) : null}
             </View>
             <ScrollView
                 showsVerticalScrollIndicator={false}
