@@ -59,7 +59,7 @@ const ViewAllTable = ({ navigation, route }) => {
         console.log('transformedStoreData --->', transformedStoreData);
         // console.log('transformedLoginData Hotel--->', transformedLoginData.waiter_id);
         const waiterId = transformedLoginData.waiter_id;
-        const storeId = transformedLoginData.waiter_id;
+        const storeId = transformedLoginData.store_id;
         setWaiter_id(waiterId)
         setStore_id(storeId)
         const responseUploadAllowed = await UploadAllowedApi(waiterId, storeId);

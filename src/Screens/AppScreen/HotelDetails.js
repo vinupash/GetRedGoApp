@@ -84,10 +84,10 @@ const HotelDetails = ({ navigation, route }) => {
             return;
         }
         const transformedStoreData = JSON.parse(userStoreDetails);
-        // console.log('transformedStoreData --->', transformedStoreData);
-        // console.log('transformedLoginData Hotel--->', transformedLoginData.waiter_id);
+        console.log('transformedStoreData --->', transformedStoreData);
+        console.log('transformedLoginData Hotel--->', transformedLoginData.store_id);
         const waiterId = transformedLoginData.waiter_id;
-        const storeId = transformedLoginData.waiter_id;
+        const storeId = transformedLoginData.store_id;
         setWaiter_id(waiterId)
         setStore_id(storeId)
         const responseUploadAllowed = await UploadAllowedApi(waiterId, storeId);

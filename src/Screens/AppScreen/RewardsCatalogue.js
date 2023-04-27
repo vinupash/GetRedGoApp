@@ -195,7 +195,7 @@ const RewardsCatalogue = ({ navigation }) => {
                         style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}
                         source={assets.bgImageCongo}
                         resizeMode='contain'>
-                        <Image source={assets.bikeImg} style={{ width: 137, height: 108 }} />
+                        <Image source={assets.bikeImg} style={{ width: 160, height: 108 }} />
                         <Text style={{ paddingVertical: 3, paddingHorizontal: 5, backgroundColor: '#FFFFFF', borderRadius: 2, color: '#AE730F', fontFamily: FONT.InterRegular, fontSize: SIZES.medium, ...SHADOWS.light }}>1 Top Performer will win</Text>
                         <Text style={{ fontSize: 24, fontFamily: FONT.InterBold, fontWeight: '800', color: '#FFFFFF', paddingVertical: 8, paddingHorizontal: 10, textAlign: 'center' }}>Royal Enfield Bullet 350 ES Regal Red</Text>
 
